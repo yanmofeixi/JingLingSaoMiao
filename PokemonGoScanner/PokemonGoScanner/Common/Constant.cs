@@ -49,6 +49,8 @@
 
         public const int ScanDelayInSeconds = 30;
 
+        public const string EmailHost = "smtp.gmail.com";
+
         //Edit below
         public const bool UseEmailPasswordToLogin = true;
 

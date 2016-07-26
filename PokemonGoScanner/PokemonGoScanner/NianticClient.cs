@@ -1,4 +1,7 @@
-﻿namespace PokemonGoScanner
+﻿using System.Globalization;
+using System.Text;
+
+namespace PokemonGoScanner
 {
     using System;
     using System.Collections.Generic;
@@ -56,12 +59,13 @@
             this.apiUrl = initialResepone.ApiUrl;
         }
 
-        public async Task ScanAsync()
+        public async Task ScanAsync(EmailAlerter alerter)
         {
             while (true)
             {
                 await this.GetPokemonsAsync();
                 this.Print();
+                var html = PrintToHtml();
                 Console.Write($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
                 for(int i = 0; i < Constant.ScanDelayInSeconds; i++)
                 {
@@ -69,6 +73,8 @@
                     Console.Write(".");
                 }
                 Console.WriteLine();
+                var scanTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                alerter.Send("Pokemon report at : " + scanTimeStamp, html);
             }
         }
 
@@ -155,6 +161,60 @@
             }
             Console.WriteLine();
             Console.ResetColor();
+        }
+
+        public string PrintToHtml()
+        {
+            var printedIds = new List<ulong>();
+            var sb = new StringBuilder();
+            sb.AppendLine("<h2>Pokemon within 1 step:</h2>");
+            foreach (var pokemon in pokemonsLessThanOneStep)
+            {
+                var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
+                var despawnMinutes = despawnSeconds / 60;
+                despawnSeconds = despawnSeconds % 60;
+                var color = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId) ? "Black" : "Red";
+                var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
+                sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude} {mapLink}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds</font></p>");
+                printedIds.Add(pokemon.EncounterId);
+            }
+
+            sb.AppendLine("<h2>Pokemon within 2 steps:</h2>");
+            foreach (var pokemon in pokemonsLessThanTwoStep)
+            {
+                if (!printedIds.Contains(pokemon.EncounterId))
+                {
+                    var despawnSeconds = pokemon.TimeTillHiddenMs;
+                    var despawnMinutes = despawnSeconds / 60;
+                    despawnSeconds = despawnSeconds % 60;
+                    var color = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonData.PokemonId) ? "Black" : "Green";
+                    var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
+                    sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude} {mapLink}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds</font></p>");
+                    printedIds.Add(pokemon.EncounterId);
+                }
+            }
+
+            sb.AppendLine("<h2>Pokemon > 200 meter away:</h2>");
+            foreach (var pokemon in pokemonsMoreThanTwoStep)
+            {
+                if (!printedIds.Contains(pokemon.EncounterId))
+                {
+                    sb.Append($"<p>{pokemon.PokemonId}</p>");
+                    printedIds.Add(pokemon.EncounterId);
+                }
+            }
+            return sb.ToString();
+        }
+
+        private string GenerateGoogleMapLink(double latitude, double longitude)
+        {
+            var sb = new StringBuilder();
+            sb.Append("<a href=\"http://maps.google.com/maps?q=");
+            sb.Append(latitude);
+            sb.Append(",");
+            sb.Append(longitude);
+            sb.Append("&z=17\">Google Map</a>");
+            return sb.ToString();
         }
     }
 }
