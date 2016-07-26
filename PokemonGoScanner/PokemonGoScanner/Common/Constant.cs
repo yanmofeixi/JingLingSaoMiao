@@ -52,9 +52,9 @@
         //Edit below
         public const bool UseEmailPasswordToLogin = true;
 
-        public const string Email = "example@gmail.com";
+        public const string Email = "duxiaoccnn@gmail.com";
 
-        public const string Password = "password";
+        public const string Password = "%TGB6yhn^YHN5tgb";
 
         public const double DefaultLatitude = 47.651144;
 
