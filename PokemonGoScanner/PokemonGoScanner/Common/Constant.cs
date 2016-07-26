@@ -31,7 +31,7 @@
 
         public const string NianticRpcUrl = @"https://pgorelease.nianticlabs.com/plfe/rpc";
 
-        public const int ScanRange = 15;
+        public const int ScanRange = 10;
 
         public const int ScanDelayInSeconds = 30;
 

@@ -8,10 +8,10 @@
         public static List<ulong> GetNearbyCellIds()
         {
             var nearbyCellIds = new List<S2CellId>();
-            var cellId = S2CellId.FromLatLng(S2LatLng.FromDegrees(Constant.DefaultLatitude, Constant.DefaultLongitude)).ParentForLevel(Constant.ScanRange);
+            var cellId = S2CellId.FromLatLng(S2LatLng.FromDegrees(Constant.DefaultLatitude, Constant.DefaultLongitude)).ParentForLevel(15);
 
             nearbyCellIds.Add(cellId);
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < Constant.ScanRange; i++)
             {
                 nearbyCellIds.Add(GetPrevious(cellId, i));
                 nearbyCellIds.Add(GetNext(cellId, i));
