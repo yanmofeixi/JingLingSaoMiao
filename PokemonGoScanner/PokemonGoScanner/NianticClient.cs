@@ -120,18 +120,9 @@
                 var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTimeHelper.ToUnixTime(DateTime.UtcNow)) / 1000;
                 var despawnMinutes = despawnSeconds / 60;
                 despawnSeconds = despawnSeconds % 60;
-                if (!Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
-                    printedIds.Add(pokemon.EncounterId);
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
-                    printedIds.Add(pokemon.EncounterId);
-                }
+                Console.ForegroundColor = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId) ? ConsoleColor.Red : ConsoleColor.White;
+                Console.WriteLine($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
+                printedIds.Add(pokemon.EncounterId);
             }
             Console.WriteLine();
 
@@ -143,18 +134,9 @@
                     var despawnSeconds = pokemon.TimeTillHiddenMs;
                     var despawnMinutes = despawnSeconds / 60;
                     despawnSeconds = despawnSeconds % 60;
-                    if (!Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonData.PokemonId))
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
-                        printedIds.Add(pokemon.EncounterId);
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                        Console.WriteLine($"{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
-                        printedIds.Add(pokemon.EncounterId);
-                    }
+                    Console.ForegroundColor = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonData.PokemonId) ? ConsoleColor.Green : ConsoleColor.White ;
+                    Console.WriteLine($"{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
+                    printedIds.Add(pokemon.EncounterId);
                 }
             }
             Console.WriteLine();
@@ -164,18 +146,9 @@
             {
                 if (!printedIds.Contains(pokemon.EncounterId))
                 {
-                    if (!Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId))
-                    {
-                        Console.ForegroundColor = ConsoleColor.Magenta;
-                        Console.WriteLine($"{pokemon.PokemonId}");
-                        printedIds.Add(pokemon.EncounterId);
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine($"{pokemon.PokemonId}");
-                        printedIds.Add(pokemon.EncounterId);
-                    }
+                    Console.ForegroundColor = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId) ? ConsoleColor.Magenta : ConsoleColor.White;
+                    Console.WriteLine($"{pokemon.PokemonId}");
+                    printedIds.Add(pokemon.EncounterId);
                 }
             }
             Console.WriteLine();
