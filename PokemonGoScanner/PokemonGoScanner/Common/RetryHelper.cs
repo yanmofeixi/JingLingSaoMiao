@@ -22,7 +22,10 @@
                 {
                     var response = await base.SendAsync(request, cancellationToken);
                     if (response.StatusCode == HttpStatusCode.BadGateway)
-                        throw new Exception(); //todo: proper implementation
+                    {
+                        Console.Write("Bad Gateway, Niantic server down");
+                        throw new Exception();
+                    }
 
                     return response;
                 }
