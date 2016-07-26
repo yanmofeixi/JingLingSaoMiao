@@ -43,6 +43,7 @@
         public static List<PokemonId> PokemonsDisplayInWhite = new List<PokemonId>
         {
             PokemonId.Caterpie,
+            PokemonId.Drowzee,
             PokemonId.Pidgey,
             PokemonId.Rattata,
             PokemonId.Spearow,

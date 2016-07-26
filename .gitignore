@@ -5,3 +5,4 @@
 /PokemonGoScanner/packages/*
 /PokemonGoScanner/PokemonGoScanner/bin/*
 /PokemonGoScanner/PokemonGoScanner/obj/*
+*.suo
