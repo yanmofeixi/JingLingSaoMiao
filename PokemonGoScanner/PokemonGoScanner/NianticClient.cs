@@ -124,6 +124,7 @@
                 Console.WriteLine($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
                 printedIds.Add(pokemon.EncounterId);
             }
+            Console.ResetColor();
             Console.WriteLine();
 
             Console.WriteLine("Pokemon within 2 steps:");
@@ -140,6 +141,7 @@
                 }
             }
             Console.WriteLine();
+            Console.ResetColor();
 
             Console.WriteLine("Pokemon > 200 meter away");
             foreach (var pokemon in pokemonsMoreThanTwoStep)
@@ -152,6 +154,7 @@
                 }
             }
             Console.WriteLine();
+            Console.ResetColor();
         }
     }
 }
