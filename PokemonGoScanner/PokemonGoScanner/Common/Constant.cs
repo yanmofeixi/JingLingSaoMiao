@@ -47,24 +47,21 @@
 
         public const int ScanRange = 10;
 
-        public const int ScanDelayInSeconds = 30;
+        public const int ScanDelayInSeconds = 60;
 
-        //Edit below
         public const bool UseEmailPasswordToLogin = true;
 
-        public const string Email = "duxiaoccnn@gmail.com";
-
-        public const string Password = "%TGB6yhn^YHN5tgb";
-
-        public const double DefaultLatitude = 47.651144;
-
-        public const double DefaultLongitude = -122.130576;
-
-        public static List<PokemonId> PokemonsDisplayInWhite = new List<PokemonId>
+        public static List<PokemonId> DefaultIgnoreList = new List<PokemonId>
         {
             PokemonId.Caterpie,
             PokemonId.Drowzee,
+            PokemonId.Golbat,
+            PokemonId.Kakuna,
+            PokemonId.Metapod,
+            PokemonId.NidoranFemale,
+            PokemonId.NidoranMale,
             PokemonId.Pidgey,
+            PokemonId.Pidgeotto,
             PokemonId.Rattata,
             PokemonId.Spearow,
             PokemonId.Weedle,
