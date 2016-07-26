@@ -5,8 +5,14 @@
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
-    public class Utility
+    public static class Utility
     {
+        public static long ToUnixTime(this DateTime date)
+        {
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return Convert.ToInt64((date - epoch).TotalMilliseconds);
+        }
+
         public static RSAParameters KeyFromB64(string b64Key)
         {
             byte[] decoded = Convert.FromBase64String(b64Key);

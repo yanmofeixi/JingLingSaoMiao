@@ -90,7 +90,7 @@
                 new Request.Types.Requests
                 {
                     Type = (int)RequestType.GET_INVENTORY,
-                    Message = new Request.Types.Time { Time_ = DateTimeHelper.ToUnixTime(DateTime.UtcNow) }.ToByteString()
+                    Message = new Request.Types.Time { Time_ = DateTime.UtcNow.ToUnixTime() }.ToByteString()
                 },
                 new Request.Types.Requests { Type = (int)RequestType.CHECK_AWARDED_BADGES },
                 new Request.Types.Requests
@@ -117,7 +117,7 @@
             Console.WriteLine("Pokemon within 1 step:");
             foreach (var pokemon in pokemonsLessThanOneStep)
             {
-                var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTimeHelper.ToUnixTime(DateTime.UtcNow)) / 1000;
+                var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
                 var despawnMinutes = despawnSeconds / 60;
                 despawnSeconds = despawnSeconds % 60;
                 Console.ForegroundColor = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Red;
