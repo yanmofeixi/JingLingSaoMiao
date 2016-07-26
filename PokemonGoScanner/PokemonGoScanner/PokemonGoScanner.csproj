@@ -83,6 +83,7 @@
     <Compile Include="Common\DateTimeHelper.cs" />
     <Compile Include="Common\GoogleLogin.cs" />
     <Compile Include="Common\GoogleMapHelper.cs" />
+    <Compile Include="Common\GPSOAuthClient.cs" />
     <Compile Include="Common\NianticRequestSender.cs" />
     <Compile Include="Common\ProtoBufHelper.cs" />
     <Compile Include="Common\RetryHelper.cs" />

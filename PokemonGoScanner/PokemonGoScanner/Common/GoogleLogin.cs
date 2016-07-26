@@ -12,32 +12,53 @@
     using System.Windows.Forms;
 
     using Models;
+    using Newtonsoft.Json;
     public class GoogleLogin
     {
         public string accessToken{get;set;}
 
         public async Task LoginAsync()
         {
-            string refreshToken = string.Empty;
-            if (File.Exists(Constant.GoogleRefreshTokenPath))
+            if (Constant.UseEmailPasswordToLogin)
             {
-                refreshToken = File.ReadAllText(Constant.GoogleRefreshTokenPath);
+                var gpsoAuthClient = new GPSOAuthClient(Constant.Email, Constant.Password);
+                var response = gpsoAuthClient.PerformMasterLogin();
+                var json = JsonConvert.SerializeObject(response, Formatting.Indented);
+                if (response.ContainsKey("Token"))
+                {
+                    string token = response["Token"];
+                    var oauthResponse = gpsoAuthClient.PerformOAuth(token, Constant.AndroidService, Constant.AndroidAppName, Constant.AndroidClientSignature);
+                    this.accessToken = oauthResponse["Auth"];
+                }
+                else
+                {
+                    Console.WriteLine("MasterLogin failed (check credentials)");
+                    throw new Exception();
+                }
             }
-
-            GoogleTokenResponse response;
-            if (!string.IsNullOrWhiteSpace(refreshToken))
+            else
             {
-                response = await this.GetGoogleAccessTokenAsync(refreshToken);
-                this.accessToken = response?.id_token;
-            }
+                string refreshToken = string.Empty;
+                if (File.Exists(Constant.GoogleRefreshTokenPath))
+                {
+                    refreshToken = File.ReadAllText(Constant.GoogleRefreshTokenPath);
+                }
 
-            if (string.IsNullOrWhiteSpace(this.accessToken))
-            {
-                var deviceCode = await this.GetGoogleDeviceCodeAsync();
-                response = await this.GetGoogleAccessTokenAsync(deviceCode);
-                refreshToken = response?.refresh_token;
-                File.WriteAllText(Constant.GoogleRefreshTokenPath, refreshToken);
-                this.accessToken = response?.id_token;
+                GoogleTokenResponse response;
+                if (!string.IsNullOrWhiteSpace(refreshToken))
+                {
+                    response = await this.GetGoogleAccessTokenAsync(refreshToken);
+                    this.accessToken = response?.id_token;
+                }
+
+                if (string.IsNullOrWhiteSpace(this.accessToken))
+                {
+                    var deviceCode = await this.GetGoogleDeviceCodeAsync();
+                    response = await this.GetGoogleAccessTokenAsync(deviceCode);
+                    refreshToken = response?.refresh_token;
+                    File.WriteAllText(Constant.GoogleRefreshTokenPath, refreshToken);
+                    this.accessToken = response?.id_token;
+                }
             }
         }
 

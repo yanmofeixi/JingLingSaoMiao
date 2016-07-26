@@ -23,6 +23,20 @@
 
         public const int GoogleGetDeviceCodeDelayInMs = 2000;
 
+        public const string AndroidService = "audience:server:client_id:848232511240-7so421jotr2609rmqakceuu1luuq0ptb.apps.googleusercontent.com";
+
+        public const string AndroidAppName = "com.nianticlabs.pokemongo";
+
+        public const string AndroidClientSignature = "321187995bc7cdc2b5fc91b11a96e2baa8602c62";
+
+        public const string b64Key = "AAAAgMom/1a/v0lblO2Ubrt60J2gcuXSljGFQXgcyZWveWLEwo6prwgi3iJIZdodyhKZQrNWp5nKJ3srRXcUW+F1BD3baEVGcmEgqaLZUNBjm057pKRI16kB0YppeGx5qIQ5QjKzsR8ETQbKLNWgRY0QRNVz34kMJR3P/LgHax/6rmf5AAAAAwEAAQ==";
+
+        public const string version = "0.0.5";
+
+        public const string authUrl = "https://android.clients.google.com/auth";
+
+        public static string userAgent = "GPSOAuthSharp/" + version;
+
         public const int NianticConnectionRetryCount = 25;
 
         public const int NianticConnectionRetryDelayInMs = 1000;
@@ -36,6 +50,12 @@
         public const int ScanDelayInSeconds = 30;
 
         //Edit below
+        public const bool UseEmailPasswordToLogin = true;
+
+        public const string Email = "example@gmail.com";
+
+        public const string Password = "password";
+
         public const double DefaultLatitude = 47.651144;
 
         public const double DefaultLongitude = -122.130576;
