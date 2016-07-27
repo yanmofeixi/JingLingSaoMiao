@@ -3,6 +3,8 @@
   <Role name="ScannerWorkerRole">
     <Instances count="1" />
     <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="db97d789-639f-47df-bdef-673dc016490a" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
