@@ -53,50 +53,14 @@
 
         public const int RestartDelayInMs = 10000;
 
-        //Edit below
-        public const bool UseEmailPasswordToLogin = true;
-
 #if DEBUG
+        public const bool UseEmailPasswordToLogin = false;
+
         public const bool EnableEmailAlert = false;
 #else
+        public const bool UseEmailPasswordToLogin = true;
+
         public const bool EnableEmailAlert = true;
 #endif
-        public static List<PokemonId> DefaultIgnoreList = new List<PokemonId>
-        {
-            PokemonId.Caterpie,
-            PokemonId.Clefairy,
-            PokemonId.Clefable,
-            PokemonId.Drowzee,
-            PokemonId.Fearow,
-            PokemonId.Golbat,
-            PokemonId.Goldeen,
-            PokemonId.Horsea,
-            PokemonId.Kakuna,
-            PokemonId.Kingler,
-            PokemonId.Krabby,
-            PokemonId.Meowth,
-            PokemonId.Metapod,
-            PokemonId.NidoranFemale,
-            PokemonId.NidoranMale,
-            PokemonId.Nidorina,
-            PokemonId.Nidorino,
-            PokemonId.Onix,
-            PokemonId.Paras,
-            PokemonId.Parasect,
-            PokemonId.Pidgeot,
-            PokemonId.Pidgeotto,
-            PokemonId.Pidgey,
-            PokemonId.Poliwag,
-            PokemonId.Psyduck,
-            PokemonId.Raticate,
-            PokemonId.Rattata,
-            PokemonId.Scyther,
-            PokemonId.Seaking,
-            PokemonId.Spearow,
-            PokemonId.Staryu,
-            PokemonId.Venonat,
-            PokemonId.Weedle,
-            PokemonId.Zubat,
-        };
     }
 }

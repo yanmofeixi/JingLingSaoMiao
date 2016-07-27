@@ -23,6 +23,20 @@
 
         public static List<UserSetting> InitializeUsers()
         {
+#if DEBUG
+            return new List<UserSetting>
+            {
+                new UserSetting
+                {
+                    UserName = "Debug",
+                    Email = "",
+                    Password = "",
+                    Longitude = 47.659265,
+                    Latitude = -122.140394,
+                    PokemonsToIgnore = DefaultIgnoreList
+                }
+            };
+#else
             return new List<UserSetting>
             {
                 new UserSetting
@@ -81,7 +95,7 @@
                     Latitude = 47.659265,
                     Longitude = -122.140394,
                     EmailToReceiveAlert = "yanmofeixi@gmail.com,317772270@qq.com",
-                    PokemonsToIgnore = Constant.DefaultIgnoreList
+                    PokemonsToIgnore = DefaultIgnoreList
                 },
 
                 new UserSetting
@@ -92,9 +106,48 @@
                     Latitude = 47.678306,
                     Longitude = -122.130660,
                     EmailToReceiveAlert = "317772270@qq.com",
-                    PokemonsToIgnore = Constant.DefaultIgnoreList
+                    PokemonsToIgnore = DefaultIgnoreList
                 },
             };
+#endif
         }
+
+        public static List<PokemonId> DefaultIgnoreList = new List<PokemonId>
+        {
+            PokemonId.Caterpie,
+            PokemonId.Clefairy,
+            PokemonId.Clefable,
+            PokemonId.Drowzee,
+            PokemonId.Fearow,
+            PokemonId.Golbat,
+            PokemonId.Goldeen,
+            PokemonId.Horsea,
+            PokemonId.Kakuna,
+            PokemonId.Kingler,
+            PokemonId.Krabby,
+            PokemonId.Meowth,
+            PokemonId.Metapod,
+            PokemonId.NidoranFemale,
+            PokemonId.NidoranMale,
+            PokemonId.Nidorina,
+            PokemonId.Nidorino,
+            PokemonId.Onix,
+            PokemonId.Paras,
+            PokemonId.Parasect,
+            PokemonId.Pidgeot,
+            PokemonId.Pidgeotto,
+            PokemonId.Pidgey,
+            PokemonId.Poliwag,
+            PokemonId.Psyduck,
+            PokemonId.Raticate,
+            PokemonId.Rattata,
+            PokemonId.Scyther,
+            PokemonId.Seaking,
+            PokemonId.Spearow,
+            PokemonId.Staryu,
+            PokemonId.Venonat,
+            PokemonId.Weedle,
+            PokemonId.Zubat,
+        };
     }
 }
