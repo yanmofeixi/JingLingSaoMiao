@@ -64,7 +64,7 @@ namespace PokemonGoScanner
             while (true)
             {
                 await this.GetPokemonsAsync(user);
-                this.Print();
+                this.Print(user);
                 if (Constant.EnableEmailAlert && 
                     this.pokemonsMoreThanTwoStep.Any(p => !user.PokemonsToIgnore.Contains(p.PokemonId) && 
                     !this.lastScannedPokemons.Contains(p.EncounterId)))
@@ -121,7 +121,7 @@ namespace PokemonGoScanner
             this.pokemonsMoreThanTwoStep = response.MapCells.SelectMany(x => x.NearbyPokemons).ToList();
         }
 
-        private void Print()
+        private void Print(UserSetting user)
         {
             List<ulong> printedIds = new List<ulong>();
 
@@ -131,7 +131,7 @@ namespace PokemonGoScanner
                 var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
                 var despawnMinutes = despawnSeconds / 60;
                 despawnSeconds = despawnSeconds % 60;
-                Console.ForegroundColor = Constant.DefaultIgnoreList.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Red;
+                Console.ForegroundColor = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Red;
                 Console.WriteLine($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
                 printedIds.Add(pokemon.EncounterId);
             }
@@ -146,7 +146,7 @@ namespace PokemonGoScanner
                     var despawnSeconds = pokemon.TimeTillHiddenMs;
                     var despawnMinutes = despawnSeconds / 60;
                     despawnSeconds = despawnSeconds % 60;
-                    Console.ForegroundColor = Constant.DefaultIgnoreList.Contains(pokemon.PokemonData.PokemonId) ? ConsoleColor.White : ConsoleColor.Green ;
+                    Console.ForegroundColor = user.PokemonsToIgnore.Contains(pokemon.PokemonData.PokemonId) ? ConsoleColor.White : ConsoleColor.Green ;
                     Console.WriteLine($"{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
                     printedIds.Add(pokemon.EncounterId);
                 }
@@ -159,7 +159,7 @@ namespace PokemonGoScanner
             {
                 if (!printedIds.Contains(pokemon.EncounterId))
                 {
-                    Console.ForegroundColor = Constant.DefaultIgnoreList.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Magenta;
+                    Console.ForegroundColor = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Magenta;
                     Console.WriteLine($"{pokemon.PokemonId}");
                     printedIds.Add(pokemon.EncounterId);
                 }
