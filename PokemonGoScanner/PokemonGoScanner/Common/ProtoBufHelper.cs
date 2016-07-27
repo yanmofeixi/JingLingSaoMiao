@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -30,7 +31,7 @@
             var response = await PostProtoAsync(client, url, request);
             if (response.Payload.Count == 0)
             {
-                Console.WriteLine("Invalid response");
+                Trace.TraceInformation("Invalid response");
                 throw new Exception();
             }
             var payload = response.Payload[0];

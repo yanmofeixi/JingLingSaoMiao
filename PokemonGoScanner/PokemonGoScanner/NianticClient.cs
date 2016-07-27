@@ -1,13 +1,12 @@
-﻿using System.Globalization;
-using System.Text;
-
-namespace PokemonGoScanner
+﻿namespace PokemonGoScanner
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Text;
     using System.Threading.Tasks;
 
     using Common;
@@ -46,7 +45,7 @@ namespace PokemonGoScanner
             var initialResepone = await this.httpClient.PostProtoAsync(Constant.NianticRpcUrl, initialRequest);
             if (initialResepone.Auth == null)
             {
-                Console.WriteLine("Token expired");
+                Trace.TraceInformation("Token expired");
                 throw new Exception();
             }
             this.unknownAuth = new Request.Types.UnknownAuth
@@ -73,13 +72,9 @@ namespace PokemonGoScanner
                     alerter.Send($"{user.UserName}", html);
                     this.lastScannedPokemons = this.pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
                 }
-                Console.Write($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
-                for(int i = 0; i < Constant.ScanDelayInSeconds; i++)
-                {
-                    await Task.Delay(1000);
-                    Console.Write(".");
-                }
-                Console.WriteLine();
+                Trace.TraceInformation($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
+                await Task.Delay(Constant.ScanDelayInSeconds * 1000);
+                Trace.TraceInformation("");
             }
         }
 
@@ -125,20 +120,18 @@ namespace PokemonGoScanner
         {
             List<ulong> printedIds = new List<ulong>();
 
-            Console.WriteLine("Pokemon within 1 step:");
+            Trace.TraceInformation("Pokemon within 1 step:");
             foreach (var pokemon in this.pokemonsLessThanOneStep)
             {
                 var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
                 var despawnMinutes = despawnSeconds / 60;
                 despawnSeconds = despawnSeconds % 60;
-                Console.ForegroundColor = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Red;
-                Console.WriteLine($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
+                Trace.TraceInformation($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
                 printedIds.Add(pokemon.EncounterId);
             }
-            Console.ResetColor();
-            Console.WriteLine();
+            Trace.TraceInformation("");
 
-            Console.WriteLine("Pokemon within 2 steps:");
+            Trace.TraceInformation("Pokemon within 2 steps:");
             foreach (var pokemon in this.pokemonsLessThanTwoStep)
             {
                 if (!printedIds.Contains(pokemon.EncounterId))
@@ -146,26 +139,22 @@ namespace PokemonGoScanner
                     var despawnSeconds = pokemon.TimeTillHiddenMs;
                     var despawnMinutes = despawnSeconds / 60;
                     despawnSeconds = despawnSeconds % 60;
-                    Console.ForegroundColor = user.PokemonsToIgnore.Contains(pokemon.PokemonData.PokemonId) ? ConsoleColor.White : ConsoleColor.Green ;
-                    Console.WriteLine($"{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
+                    Trace.TraceInformation($"{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
                     printedIds.Add(pokemon.EncounterId);
                 }
             }
-            Console.WriteLine();
-            Console.ResetColor();
+            Trace.TraceInformation("");
 
-            Console.WriteLine("Pokemon > 200 meter away");
+            Trace.TraceInformation("Pokemon > 200 meter away");
             foreach (var pokemon in this.pokemonsMoreThanTwoStep)
             {
                 if (!printedIds.Contains(pokemon.EncounterId))
                 {
-                    Console.ForegroundColor = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Magenta;
-                    Console.WriteLine($"{pokemon.PokemonId}");
+                    Trace.TraceInformation($"{pokemon.PokemonId}");
                     printedIds.Add(pokemon.EncounterId);
                 }
             }
-            Console.WriteLine();
-            Console.ResetColor();
+            Trace.TraceInformation("");
         }
 
         public string PrintToHtml(UserSetting user)

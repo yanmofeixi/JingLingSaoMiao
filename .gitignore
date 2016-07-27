@@ -5,4 +5,13 @@
 /PokemonGoScanner/packages/*
 /PokemonGoScanner/PokemonGoScanner/bin/*
 /PokemonGoScanner/PokemonGoScanner/obj/*
-*.suo
+/PokemonGoScanner/PokemonGoScanner/Properties/*
+/PokemonGoScanner/ScannerService/bin/*
+/PokemonGoScanner/ScannerService/csx/*
+/PokemonGoScanner/ScannerService/obj/*
+/PokemonGoScanner/ScannerWorkerRole/bin/*
+/PokemonGoScanner/ScannerWorkerRole/obj/*
+PokemonGoScanner/ScannerWorkerRole/Properties/AssemblyInfo.cs
+PokemonGoScanner/PokemonGoScanner/PokemonGoScanner.csproj.user
+PokemonGoScanner/.vs/PokemonGoScanner/v14/.suo
+/PokemonGoScanner/.vs/config/applicationhost.config

@@ -1,6 +1,7 @@
 ﻿namespace PokemonGoScanner.Common
 {
     using System;
+    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -23,7 +24,7 @@
                     var response = await base.SendAsync(request, cancellationToken);
                     if (response.StatusCode == HttpStatusCode.BadGateway)
                     {
-                        Console.Write("Bad Gateway, Niantic server down");
+                        Trace.TraceError("Bad Gateway, Niantic server down");
                         throw new Exception();
                     }
 
@@ -31,7 +32,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.Write($"Error: {ex}");
+                    Trace.TraceError($"Error: {ex}");
                     if (i >= Constant.NianticConnectionRetryCount) throw;
                     await Task.Delay(Constant.NianticConnectionRetryDelayInMs, cancellationToken);
                 }

@@ -31,8 +31,8 @@
                     UserName = "Debug",
                     Email = "",
                     Password = "",
-                    Longitude = 47.659265,
-                    Latitude = -122.140394,
+                    Latitude = 47.659265,
+                    Longitude = -122.140394,
                     PokemonsToIgnore = DefaultIgnoreList
                 }
             };

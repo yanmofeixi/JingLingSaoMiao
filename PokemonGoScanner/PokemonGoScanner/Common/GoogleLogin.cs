@@ -32,7 +32,7 @@
                 }
                 else
                 {
-                    Console.WriteLine("MasterLogin failed (check credentials)");
+                    Trace.TraceInformation("MasterLogin failed (check credentials)");
                     throw new Exception();
                 }
             }
@@ -94,12 +94,8 @@
 
             try
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Do not use your main Google account!!!");
-                Console.WriteLine("Do not use your main Google account!!!");
-                Console.WriteLine("Do not use your main Google account!!!");
-                Console.ResetColor();
-                Console.WriteLine("Device code copied to clipboard");
+                Trace.TraceInformation("Do not use your main Google account!!!");
+                Trace.TraceInformation("Device code copied to clipboard");
                 Thread.Sleep(Constant.GoogleGetDeviceCodeDelayInMs);
                 Process.Start(Constant.GoogleDeviceUri);
                 var thread = new Thread(() => Clipboard.SetText(deviceCode.user_code)); //Copy device code
@@ -109,7 +105,7 @@
             }
             catch (Exception)
             {
-                Console.WriteLine($"Goto: {Constant.GoogleDeviceUri} & enter {deviceCode.user_code}");
+                Trace.TraceInformation($"Goto: {Constant.GoogleDeviceUri} & enter {deviceCode.user_code}");
             }
 
             return deviceCode;
