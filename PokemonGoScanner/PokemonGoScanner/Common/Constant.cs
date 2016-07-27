@@ -51,6 +51,8 @@
 
         public const string EmailHost = "smtp.gmail.com";
 
+        public const int RestartDelayInMs = 10000;
+
         //Edit below
         public const bool UseEmailPasswordToLogin = true;
 

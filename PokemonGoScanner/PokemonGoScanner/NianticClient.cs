@@ -67,11 +67,11 @@ namespace PokemonGoScanner
                 this.Print();
                 if (Constant.EnableEmailAlert && 
                     this.pokemonsMoreThanTwoStep.Any(p => !user.PokemonsToIgnore.Contains(p.PokemonId) && 
-                    !lastScannedPokemons.Contains(p.EncounterId)))
+                    !this.lastScannedPokemons.Contains(p.EncounterId)))
                 {
                     var html = PrintToHtml(user);
                     alerter.Send($"{user.UserName}", html);
-                    lastScannedPokemons = pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
+                    this.lastScannedPokemons = this.pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
                 }
                 Console.Write($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
                 for(int i = 0; i < Constant.ScanDelayInSeconds; i++)
@@ -126,7 +126,7 @@ namespace PokemonGoScanner
             List<ulong> printedIds = new List<ulong>();
 
             Console.WriteLine("Pokemon within 1 step:");
-            foreach (var pokemon in pokemonsLessThanOneStep)
+            foreach (var pokemon in this.pokemonsLessThanOneStep)
             {
                 var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
                 var despawnMinutes = despawnSeconds / 60;
@@ -139,7 +139,7 @@ namespace PokemonGoScanner
             Console.WriteLine();
 
             Console.WriteLine("Pokemon within 2 steps:");
-            foreach (var pokemon in pokemonsLessThanTwoStep)
+            foreach (var pokemon in this.pokemonsLessThanTwoStep)
             {
                 if (!printedIds.Contains(pokemon.EncounterId))
                 {
@@ -155,7 +155,7 @@ namespace PokemonGoScanner
             Console.ResetColor();
 
             Console.WriteLine("Pokemon > 200 meter away");
-            foreach (var pokemon in pokemonsMoreThanTwoStep)
+            foreach (var pokemon in this.pokemonsMoreThanTwoStep)
             {
                 if (!printedIds.Contains(pokemon.EncounterId))
                 {
@@ -172,10 +172,10 @@ namespace PokemonGoScanner
         {
             var printedIds = new List<ulong>();
             var sb = new StringBuilder();           
-            if (pokemonsLessThanOneStep.Count > 0)
+            if (this.pokemonsLessThanOneStep.Count > 0)
             {
                 sb.AppendLine("<h2>Pokemon within 1 step:</h2>");
-                foreach (var pokemon in pokemonsLessThanOneStep)
+                foreach (var pokemon in this.pokemonsLessThanOneStep)
                 {
                     var despawnSeconds = (pokemon.ExpirationTimestampMs -
                                           DateTime.UtcNow.ToUnixTime())/1000;
@@ -188,11 +188,12 @@ namespace PokemonGoScanner
                     printedIds.Add(pokemon.EncounterId);
                 }
             }
-            if (pokemonsLessThanTwoStep.Count != printedIds.Count)
+
+            if (this.pokemonsLessThanTwoStep.Count != printedIds.Count)
             {
                 sb.AppendLine("<h2>Pokemon within 2 steps:</h2>");
 
-                foreach (var pokemon in pokemonsLessThanTwoStep)
+                foreach (var pokemon in this.pokemonsLessThanTwoStep)
                 {
                     if (!printedIds.Contains(pokemon.EncounterId))
                     {
@@ -201,7 +202,7 @@ namespace PokemonGoScanner
                         despawnSeconds = despawnSeconds%60;
                         var color = user.PokemonsToIgnore.Contains(pokemon.PokemonData.PokemonId)
                             ? "Black"
-                            : "Green";
+                            : "Red";
                         var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
                         sb.Append(
                             $"<p><font color=\"{color}\">{pokemon.PokemonData.PokemonId} at {mapLink}, spawnId: {pokemon.SpawnpointId}, despawn in {despawnMinutes} minutes {despawnSeconds} seconds</font></p>");
@@ -209,14 +210,15 @@ namespace PokemonGoScanner
                     }
                 }
             }
-            if (pokemonsMoreThanTwoStep.Count != printedIds.Count)
+            if (this.pokemonsMoreThanTwoStep.Count != printedIds.Count)
             {
                 sb.AppendLine("<h2>Pokemon > 200 meter away:</h2>");
-                foreach (var pokemon in pokemonsMoreThanTwoStep)
+                foreach (var pokemon in this.pokemonsMoreThanTwoStep)
                 {
                     if (!printedIds.Contains(pokemon.EncounterId))
                     {
-                        sb.Append($"<p>{pokemon.PokemonId}</p>");
+                        var color = user.PokemonsToIgnore.Contains(pokemon.PokemonId)? "Black": "Red";
+                        sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonId}</p>");
                         printedIds.Add(pokemon.EncounterId);
                     }
                 }
