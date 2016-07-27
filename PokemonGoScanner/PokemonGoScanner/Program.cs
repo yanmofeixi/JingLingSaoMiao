@@ -1,4 +1,6 @@
-﻿namespace PokemonGoScanner
+﻿using System.Net.Mail;
+
+namespace PokemonGoScanner
 {
     using System;
     using System.Collections.Generic;
@@ -18,11 +20,12 @@
                 {
                     var googleLogin = new GoogleLogin();
                     var nianticClient = new NianticClient();
+                    var emailAlerter = new EmailAlerter(new SmtpClient(Constant.EmailHost), user);
                     Task.Run(() => {
                         googleLogin.LoginAsync(user).Wait();
                         nianticClient.InitializeAsync(googleLogin.accessToken, user).Wait();
                         Console.WriteLine($"Start scanning at Latitude:{user.Latitude}, Longitude:{user.Longitude}, for user {user.UserName}");
-                        nianticClient.ScanAsync(user).Wait();
+                        nianticClient.ScanAsync(user, emailAlerter).Wait();
                     });
                 }
             }
@@ -58,6 +61,17 @@
                     EmailToReceiveAlert = "yanmofeixi@gmail.com",
                     PokemonsToIgnore = Constant.DefaultIgnoreList
                 },
+
+                new UserSetting
+                {
+                    UserName = "Junwei Hu",
+                    Email = "duxiaoccnn@gmail.com",
+                    Password = "%TGB6yhn^YHN5tgb",
+                    Latitude = 47.678306,
+                    Longitude = -122.130660,
+                    EmailToReceiveAlert = "317772270@qq.com",
+                    PokemonsToIgnore = Constant.DefaultIgnoreList
+                }
             };
         }
     }

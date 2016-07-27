@@ -13,6 +13,7 @@
 
         public double Longitude;
 
+        //Comma seperated
         public string EmailToReceiveAlert;
 
         public List<PokemonId> PokemonsToIgnore;

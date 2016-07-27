@@ -49,7 +49,12 @@
 
         public const int ScanDelayInSeconds = 60;
 
+        public const string EmailHost = "smtp.gmail.com";
+
+        //Edit below
         public const bool UseEmailPasswordToLogin = true;
+
+        public const bool EnableEmailAlert = true;
 
         public static List<PokemonId> DefaultIgnoreList = new List<PokemonId>
         {
