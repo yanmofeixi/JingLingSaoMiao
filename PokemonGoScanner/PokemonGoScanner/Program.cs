@@ -53,12 +53,12 @@ namespace PokemonGoScanner
 
                 new UserSetting
                 {
-                    UserName = "Qiyang Lu-Office",
+                    UserName = "Redwest-Office",
                     Email = "pkmscanner2@gmail.com",
                     Password = "pokemongo",
                     Latitude = 47.659265,
                     Longitude = -122.140394,
-                    EmailToReceiveAlert = "yanmofeixi@gmail.com",
+                    EmailToReceiveAlert = "yanmofeixi@gmail.com,317772270@qq.com",
                     PokemonsToIgnore = Constant.DefaultIgnoreList
                 },
 
