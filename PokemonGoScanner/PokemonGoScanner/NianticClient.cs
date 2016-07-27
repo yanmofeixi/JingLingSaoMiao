@@ -40,9 +40,9 @@ namespace PokemonGoScanner
             httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
         }
 
-        public async Task InitializeAsync(string google_token)
+        public async Task InitializeAsync(string google_token, UserSetting user)
         {
-            var initialRequest = NianticRequestSender.GetInitialRequest(google_token, RequestType.GET_PLAYER, RequestType.GET_HATCHED_OBJECTS, RequestType.GET_INVENTORY, RequestType.CHECK_AWARDED_BADGES, RequestType.DOWNLOAD_SETTINGS);
+            var initialRequest = NianticRequestSender.GetInitialRequest(user, google_token, RequestType.GET_PLAYER, RequestType.GET_HATCHED_OBJECTS, RequestType.GET_INVENTORY, RequestType.CHECK_AWARDED_BADGES, RequestType.DOWNLOAD_SETTINGS);
             var initialResepone = await this.httpClient.PostProtoAsync(Constant.NianticRpcUrl, initialRequest);
             if (initialResepone.Auth == null)
             {
@@ -59,13 +59,18 @@ namespace PokemonGoScanner
             this.apiUrl = initialResepone.ApiUrl;
         }
 
-        public async Task ScanAsync(EmailAlerter alerter)
+        public async Task ScanAsync(UserSetting user, EmailAlerter alerter)
         {
             while (true)
             {
-                await this.GetPokemonsAsync();
+                await this.GetPokemonsAsync(user);
                 this.Print();
-                var html = PrintToHtml();
+                if (Constant.EnableEmailAlert)
+                {
+                    var html = PrintToHtml(user);
+                    var scanTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                    alerter.Send($"Pokemon report at : {scanTimeStamp} for {user.UserName} ", html);
+                }
                 Console.Write($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
                 for(int i = 0; i < Constant.ScanDelayInSeconds; i++)
                 {
@@ -73,20 +78,18 @@ namespace PokemonGoScanner
                     Console.Write(".");
                 }
                 Console.WriteLine();
-                var scanTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-                alerter.Send("Pokemon report at : " + scanTimeStamp, html);
             }
         }
 
-        private async Task GetPokemonsAsync()
+        private async Task GetPokemonsAsync(UserSetting user)
         {
             var cellRequest = new Request.Types.MapObjectsRequest
             {
-                CellIds = ByteString.CopyFrom(ProtoBufHelper.EncodeUlongList(GoogleMapHelper.GetNearbyCellIds())),
+                CellIds = ByteString.CopyFrom(ProtoBufHelper.EncodeUlongList(GoogleMapHelper.GetNearbyCellIds(user))),
                 Unknown14 = ByteString.CopyFromUtf8("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0")
             };
 
-            var request = NianticRequestSender.GetRequest(this.unknownAuth, 
+            var request = NianticRequestSender.GetRequest(user, this.unknownAuth, 
                 new Request.Types.Requests
                 {
                     Type = (int)RequestType.GET_MAP_OBJECTS,
@@ -126,7 +129,7 @@ namespace PokemonGoScanner
                 var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
                 var despawnMinutes = despawnSeconds / 60;
                 despawnSeconds = despawnSeconds % 60;
-                Console.ForegroundColor = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Red;
+                Console.ForegroundColor = Constant.DefaultIgnoreList.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Red;
                 Console.WriteLine($"{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
                 printedIds.Add(pokemon.EncounterId);
             }
@@ -141,7 +144,7 @@ namespace PokemonGoScanner
                     var despawnSeconds = pokemon.TimeTillHiddenMs;
                     var despawnMinutes = despawnSeconds / 60;
                     despawnSeconds = despawnSeconds % 60;
-                    Console.ForegroundColor = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonData.PokemonId) ? ConsoleColor.White : ConsoleColor.Green ;
+                    Console.ForegroundColor = Constant.DefaultIgnoreList.Contains(pokemon.PokemonData.PokemonId) ? ConsoleColor.White : ConsoleColor.Green ;
                     Console.WriteLine($"{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds");
                     printedIds.Add(pokemon.EncounterId);
                 }
@@ -154,7 +157,7 @@ namespace PokemonGoScanner
             {
                 if (!printedIds.Contains(pokemon.EncounterId))
                 {
-                    Console.ForegroundColor = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Magenta;
+                    Console.ForegroundColor = Constant.DefaultIgnoreList.Contains(pokemon.PokemonId) ? ConsoleColor.White : ConsoleColor.Magenta;
                     Console.WriteLine($"{pokemon.PokemonId}");
                     printedIds.Add(pokemon.EncounterId);
                 }
@@ -163,7 +166,7 @@ namespace PokemonGoScanner
             Console.ResetColor();
         }
 
-        public string PrintToHtml()
+        public string PrintToHtml(UserSetting user)
         {
             var printedIds = new List<ulong>();
             var sb = new StringBuilder();
@@ -173,7 +176,7 @@ namespace PokemonGoScanner
                 var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
                 var despawnMinutes = despawnSeconds / 60;
                 despawnSeconds = despawnSeconds % 60;
-                var color = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonId) ? "Black" : "Red";
+                var color = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? "Black" : "Red";
                 var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
                 sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude} {mapLink}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds</font></p>");
                 printedIds.Add(pokemon.EncounterId);
@@ -187,7 +190,7 @@ namespace PokemonGoScanner
                     var despawnSeconds = pokemon.TimeTillHiddenMs;
                     var despawnMinutes = despawnSeconds / 60;
                     despawnSeconds = despawnSeconds % 60;
-                    var color = Constant.PokemonsDisplayInWhite.Contains(pokemon.PokemonData.PokemonId) ? "Black" : "Green";
+                    var color = user.PokemonsToIgnore.Contains(pokemon.PokemonData.PokemonId) ? "Black" : "Green";
                     var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
                     sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude} {mapLink}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds</font></p>");
                     printedIds.Add(pokemon.EncounterId);

@@ -2,13 +2,15 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+
     using Google.Common.Geometry;
+    using Models;
     public class GoogleMapHelper
     {
-        public static List<ulong> GetNearbyCellIds()
+        public static List<ulong> GetNearbyCellIds(UserSetting user)
         {
             var nearbyCellIds = new List<S2CellId>();
-            var cellId = S2CellId.FromLatLng(S2LatLng.FromDegrees(Constant.DefaultLatitude, Constant.DefaultLongitude)).ParentForLevel(15);
+            var cellId = S2CellId.FromLatLng(S2LatLng.FromDegrees(user.Latitude, user.Longitude)).ParentForLevel(15);
 
             nearbyCellIds.Add(cellId);
             for (var i = 0; i < Constant.ScanRange; i++)

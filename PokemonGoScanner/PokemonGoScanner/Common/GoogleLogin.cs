@@ -17,11 +17,11 @@
     {
         public string accessToken{get;set;}
 
-        public async Task LoginAsync()
+        public async Task LoginAsync(UserSetting user)
         {
             if (Constant.UseEmailPasswordToLogin)
             {
-                var gpsoAuthClient = new GPSOAuthClient(Constant.Email, Constant.Password);
+                var gpsoAuthClient = new GPSOAuthClient(user.Email, user.Password);
                 var response = gpsoAuthClient.PerformMasterLogin();
                 var json = JsonConvert.SerializeObject(response, Formatting.Indented);
                 if (response.ContainsKey("Token"))

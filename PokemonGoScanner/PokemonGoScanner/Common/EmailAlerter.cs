@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Net.Mail;
+using PokemonGoScanner.Models;
 
 namespace PokemonGoScanner.Common
 {
@@ -9,15 +10,16 @@ namespace PokemonGoScanner.Common
         private readonly SmtpClient _smtpServer;
         private readonly string _senderAddress = ConfigurationManager.AppSettings["SenderAddress"];
         private readonly string _password = ConfigurationManager.AppSettings["SenderPassword"];
-        private readonly string _receiverEmail = ConfigurationManager.AppSettings["ReceiverEmail"];
+        private readonly string _receiverAddress;
 
-        public EmailAlerter(SmtpClient smtpClient)
+        public EmailAlerter(SmtpClient smtpClient, UserSetting user)
         {
             _smtpServer = smtpClient;
             _smtpServer.EnableSsl = true;
             _smtpServer.UseDefaultCredentials = false;
             _smtpServer.Port = 587;
             _smtpServer.Credentials = GetCredentialFromConfig();
+            _receiverAddress = user.EmailToReceiveAlert;
         }
 
         public void Send(string subject, string message)
@@ -51,11 +53,11 @@ namespace PokemonGoScanner.Common
 
         private string GetReceiverEmailFromConfig()
         {
-            if (string.IsNullOrWhiteSpace(_receiverEmail))
+            if (string.IsNullOrWhiteSpace(_receiverAddress))
             {
                 throw new ArgumentException($"Cannot find 'ReceiverEmail' or it is not valid");
             }
-            return _receiverEmail;
+            return _receiverAddress;
         }
     }
 }
