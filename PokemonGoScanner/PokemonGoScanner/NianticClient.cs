@@ -20,7 +20,7 @@ namespace PokemonGoScanner
         private readonly HttpClient httpClient;
         private string apiUrl;
         private Request.Types.UnknownAuth unknownAuth;
-
+        private List<ulong> lastScannedPokemons = new List<ulong>(); 
         private List<MapPokemon> pokemonsLessThanOneStep;
         private List<WildPokemon> pokemonsLessThanTwoStep;
         private List<NearbyPokemon> pokemonsMoreThanTwoStep;
@@ -65,11 +65,13 @@ namespace PokemonGoScanner
             {
                 await this.GetPokemonsAsync(user);
                 this.Print();
-                if (Constant.EnableEmailAlert)
+                if (Constant.EnableEmailAlert && 
+                    this.pokemonsMoreThanTwoStep.Any(p => !user.PokemonsToIgnore.Contains(p.PokemonId) && 
+                    !lastScannedPokemons.Contains(p.EncounterId)))
                 {
                     var html = PrintToHtml(user);
-                    var scanTimeStamp = DateTime.Now.ToString(CultureInfo.InvariantCulture);
-                    alerter.Send($"Pokemon report at : {scanTimeStamp} for {user.UserName} ", html);
+                    alerter.Send($"{user.UserName}", html);
+                    lastScannedPokemons = pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
                 }
                 Console.Write($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
                 for(int i = 0; i < Constant.ScanDelayInSeconds; i++)
@@ -169,41 +171,54 @@ namespace PokemonGoScanner
         public string PrintToHtml(UserSetting user)
         {
             var printedIds = new List<ulong>();
-            var sb = new StringBuilder();
-            sb.AppendLine("<h2>Pokemon within 1 step:</h2>");
-            foreach (var pokemon in pokemonsLessThanOneStep)
+            var sb = new StringBuilder();           
+            if (pokemonsLessThanOneStep.Count > 0)
             {
-                var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
-                var despawnMinutes = despawnSeconds / 60;
-                despawnSeconds = despawnSeconds % 60;
-                var color = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? "Black" : "Red";
-                var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
-                sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonId} at {pokemon.Latitude},{pokemon.Longitude} {mapLink}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds</font></p>");
-                printedIds.Add(pokemon.EncounterId);
-            }
-
-            sb.AppendLine("<h2>Pokemon within 2 steps:</h2>");
-            foreach (var pokemon in pokemonsLessThanTwoStep)
-            {
-                if (!printedIds.Contains(pokemon.EncounterId))
+                sb.AppendLine("<h2>Pokemon within 1 step:</h2>");
+                foreach (var pokemon in pokemonsLessThanOneStep)
                 {
-                    var despawnSeconds = pokemon.TimeTillHiddenMs;
-                    var despawnMinutes = despawnSeconds / 60;
-                    despawnSeconds = despawnSeconds % 60;
-                    var color = user.PokemonsToIgnore.Contains(pokemon.PokemonData.PokemonId) ? "Black" : "Green";
+                    var despawnSeconds = (pokemon.ExpirationTimestampMs -
+                                          DateTime.UtcNow.ToUnixTime())/1000;
+                    var despawnMinutes = despawnSeconds/60;
+                    despawnSeconds = despawnSeconds%60;
+                    var color = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? "Black" : "Red";
                     var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
-                    sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonData.PokemonId} at {pokemon.Latitude},{pokemon.Longitude} {mapLink}, despawn in {despawnMinutes} minutes { despawnSeconds} seconds</font></p>");
+                    sb.Append(
+                        $"<p><font color=\"{color}\">{pokemon.PokemonId} at {mapLink}, spawnId: {pokemon.SpawnpointId}, despawn in {despawnMinutes} minutes {despawnSeconds} seconds</font></p>");
                     printedIds.Add(pokemon.EncounterId);
                 }
             }
-
-            sb.AppendLine("<h2>Pokemon > 200 meter away:</h2>");
-            foreach (var pokemon in pokemonsMoreThanTwoStep)
+            if (pokemonsLessThanTwoStep.Count != printedIds.Count)
             {
-                if (!printedIds.Contains(pokemon.EncounterId))
+                sb.AppendLine("<h2>Pokemon within 2 steps:</h2>");
+
+                foreach (var pokemon in pokemonsLessThanTwoStep)
                 {
-                    sb.Append($"<p>{pokemon.PokemonId}</p>");
-                    printedIds.Add(pokemon.EncounterId);
+                    if (!printedIds.Contains(pokemon.EncounterId))
+                    {
+                        var despawnSeconds = pokemon.TimeTillHiddenMs;
+                        var despawnMinutes = despawnSeconds/60;
+                        despawnSeconds = despawnSeconds%60;
+                        var color = user.PokemonsToIgnore.Contains(pokemon.PokemonData.PokemonId)
+                            ? "Black"
+                            : "Green";
+                        var mapLink = GenerateGoogleMapLink(pokemon.Latitude, pokemon.Longitude);
+                        sb.Append(
+                            $"<p><font color=\"{color}\">{pokemon.PokemonData.PokemonId} at {mapLink}, spawnId: {pokemon.SpawnpointId}, despawn in {despawnMinutes} minutes {despawnSeconds} seconds</font></p>");
+                        printedIds.Add(pokemon.EncounterId);
+                    }
+                }
+            }
+            if (pokemonsMoreThanTwoStep.Count != printedIds.Count)
+            {
+                sb.AppendLine("<h2>Pokemon > 200 meter away:</h2>");
+                foreach (var pokemon in pokemonsMoreThanTwoStep)
+                {
+                    if (!printedIds.Contains(pokemon.EncounterId))
+                    {
+                        sb.Append($"<p>{pokemon.PokemonId}</p>");
+                        printedIds.Add(pokemon.EncounterId);
+                    }
                 }
             }
             return sb.ToString();

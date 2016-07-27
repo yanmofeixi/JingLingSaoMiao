@@ -64,14 +64,14 @@ namespace PokemonGoScanner
 
                 new UserSetting
                 {
-                    UserName = "Junwei Hu",
+                    UserName = "Junwei Hu-Home",
                     Email = "duxiaoccnn@gmail.com",
                     Password = "%TGB6yhn^YHN5tgb",
                     Latitude = 47.678306,
                     Longitude = -122.130660,
                     EmailToReceiveAlert = "317772270@qq.com",
                     PokemonsToIgnore = Constant.DefaultIgnoreList
-                }
+                },
             };
         }
     }
