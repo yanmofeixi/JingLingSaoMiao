@@ -1,59 +1,185 @@
 ﻿namespace PokemonGoScanner.Common
 {
-    using System.Linq;
-    using Enum;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using POGOProtos.Networking.Requests;
+    using POGOProtos.Networking.Requests.Messages;
+    using POGOProtos.Networking.Responses;
+    using POGOProtos.Networking.Envelopes;
+    using static POGOProtos.Networking.Envelopes.RequestEnvelope.Types;
+    using Google.Protobuf;
+
     using Models;
-    public static class NianticRequestSender
+    using System.Net;
+    public class NianticRequestSender
     {
-        public static Request GetInitialRequest(UserSetting user, string token, params RequestType[] customRequestTypes)
+        private string authToken;
+
+        private AuthTicket authTicket;
+
+        private string apiUri;
+
+        private HttpClient httpClient;
+
+        public NianticRequestSender(string authToken, AuthTicket authTicket = null)
         {
-            var request = new Request
+            this.authToken = authToken;
+            this.authTicket = authTicket;
+            var handler = new HttpClientHandler
             {
-                Altitude = Utility.FloatAsUlong(Constant.DefaultAltitude),
-                Auth = new Request.Types.AuthInfo
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                AllowAutoRedirect = false
+            };
+            httpClient = new HttpClient(new RetryHelper(handler));
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Niantic App");
+            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Connection", "keep-alive");
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "*/*");
+            httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
+        }
+
+        public RequestEnvelope GetRequestEnvelope(UserSetting user, params Request[] customRequests)
+        {
+            return new RequestEnvelope
+            {
+                StatusCode = 2,
+
+                RequestId = 1469378659230941192,
+                Requests = { customRequests },
+
+                //Unknown6 = ,
+                Latitude = user.Latitude,
+                Longitude = user.Longitude,
+                Altitude = Constant.DefaultAltitude,
+                AuthInfo = new AuthInfo
                 {
                     Provider = "google",
-                    Token = new Request.Types.AuthInfo.Types.JWT
+                    Token = new AuthInfo.Types.JWT
                     {
-                        Contents = token,
-                        Unknown13 = 14
+                        Contents = this.authToken,
+                        Unknown2 = 14
                     }
                 },
-                Latitude = Utility.FloatAsUlong(user.Latitude),
-                Longitude = Utility.FloatAsUlong(user.Longitude),
-                RpcId = 1469378659230941192,
-                Unknown1 = 2,
-                Unknown12 = 989,
-                Requests =
-                {
-                    customRequestTypes.ToList().Select(c => new Request.Types.Requests { Type = (int)c })
-                }
+                AuthTicket = this.authTicket,
+                Unknown12 = 989
             };
-            return request;
         }
 
-        public static Request GetRequest(UserSetting user, Request.Types.UnknownAuth unknownAuth, params Request.Types.Requests[] customRequests)
+        public async Task Initialize(UserSetting user)
         {
-            return new Request
+            #region Standard intial request messages in right Order
+
+            var getPlayerMessage = new GetPlayerMessage();
+            var getHatchedEggsMessage = new GetHatchedEggsMessage();
+            var getInventoryMessage = new GetInventoryMessage
             {
-                Altitude = Utility.FloatAsUlong(Constant.DefaultAltitude),
-                Unknownauth = unknownAuth,
-                Latitude = Utility.FloatAsUlong(user.Latitude),
-                Longitude = Utility.FloatAsUlong(user.Longitude),
-                RpcId = 1469378659230941192,
-                Unknown1 = 2,
-                Unknown12 = 989,
-                Requests =
-                {
-                    customRequests
-                }
+                LastTimestampMs = DateTime.UtcNow.ToUnixTime()
             };
+            var checkAwardedBadgesMessage = new CheckAwardedBadgesMessage();
+            var downloadSettingsMessage = new DownloadSettingsMessage
+            {
+                Hash = "05daf51635c82611d1aac95c0b051d3ec088a930"
+            };
+
+            #endregion
+
+            var serverRequest = this.GetRequestEnvelope(
+                user,
+                new Request
+                {
+                    RequestType = RequestType.GetPlayer,
+                    RequestMessage = getPlayerMessage.ToByteString()
+                }, new Request
+                {
+                    RequestType = RequestType.GetHatchedEggs,
+                    RequestMessage = getHatchedEggsMessage.ToByteString()
+                }, new Request
+                {
+                    RequestType = RequestType.GetInventory,
+                    RequestMessage = getInventoryMessage.ToByteString()
+                }, new Request
+                {
+                    RequestType = RequestType.CheckAwardedBadges,
+                    RequestMessage = checkAwardedBadgesMessage.ToByteString()
+                }, new Request
+                {
+                    RequestType = RequestType.DownloadSettings,
+                    RequestMessage = downloadSettingsMessage.ToByteString()
+                });
+            var response = await this.PostProtoBuf<Request>(Constant.NianticRpcUrl, serverRequest);
+            if (response.AuthTicket == null)
+                throw new Exception("Token has expired");
+
+            this.authTicket = response.AuthTicket;
+            this.apiUri = response.ApiUrl;
         }
 
-        public static Request GetRequest(UserSetting user, Request.Types.UnknownAuth unknownAuth,  params RequestType[] customRequestTypes)
+        public async Task<GetMapObjectsResponse> SendMapRequest(UserSetting user)
         {
-            var customRequests = customRequestTypes.ToList().Select(c => new Request.Types.Requests { Type = (int)c });
-            return GetRequest(user, unknownAuth, customRequests.ToArray());
+            var getMapObjectsMessage = new GetMapObjectsMessage
+            {
+                CellId = { GoogleMapHelper.GetNearbyCellIds(user) },
+                SinceTimestampMs = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+                Latitude = user.Latitude,
+                Longitude = user.Longitude
+            };
+            var getHatchedEggsMessage = new GetHatchedEggsMessage();
+            var getInventoryMessage = new GetInventoryMessage
+            {
+                LastTimestampMs = DateTime.UtcNow.ToUnixTime()
+            };
+            var checkAwardedBadgesMessage = new CheckAwardedBadgesMessage();
+            var downloadSettingsMessage = new DownloadSettingsMessage
+            {
+                Hash = "05daf51635c82611d1aac95c0b051d3ec088a930"
+            };
+
+            var request = this.GetRequestEnvelope(
+                user,
+                new Request
+                {
+                    RequestType = RequestType.GetMapObjects,
+                    RequestMessage = getMapObjectsMessage.ToByteString()
+                },
+                new Request
+                {
+                    RequestType = RequestType.GetHatchedEggs,
+                    RequestMessage = getHatchedEggsMessage.ToByteString()
+                }, new Request
+                {
+                    RequestType = RequestType.GetInventory,
+                    RequestMessage = getInventoryMessage.ToByteString()
+                }, new Request
+                {
+                    RequestType = RequestType.CheckAwardedBadges,
+                    RequestMessage = checkAwardedBadgesMessage.ToByteString()
+                }, new Request
+                {
+                    RequestType = RequestType.DownloadSettings,
+                    RequestMessage = downloadSettingsMessage.ToByteString()
+                });
+
+            var response = await PostProtoBuf<Request>($"https://{this.apiUri}/rpc", request);
+
+            if (response.Returns.Count == 0)
+                throw new Exception("Invalid Response");
+
+            var payload = response.Returns[0];
+            var parsedPayload = new GetMapObjectsResponse();
+            parsedPayload.MergeFrom(payload);
+            return parsedPayload;
+        }
+
+        public async Task<ResponseEnvelope> PostProtoBuf<TRequest>(string url, RequestEnvelope requestEnvelope) where TRequest : IMessage<TRequest>
+        {
+            var data = requestEnvelope.ToByteString();
+            var result = await this.httpClient.PostAsync(url, new ByteArrayContent(data.ToByteArray()));
+            var responseData = await result.Content.ReadAsByteArrayAsync();
+            var codedStream = new CodedInputStream(responseData);
+            var decodedResponse = new ResponseEnvelope();
+            decodedResponse.MergeFrom(codedStream);
+            return decodedResponse;
         }
     }
 }

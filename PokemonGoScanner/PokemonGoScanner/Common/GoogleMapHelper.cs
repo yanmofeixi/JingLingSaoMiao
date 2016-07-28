@@ -2,11 +2,23 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
 
     using Google.Common.Geometry;
     using Models;
     public class GoogleMapHelper
     {
+        public static string GetGMapLink(double latitude, double longitude, string text = "Google Map")
+        {
+            var sb = new StringBuilder();
+            sb.Append($"<a href=\"{Constant.GoogleMapUrl}");
+            sb.Append(latitude);
+            sb.Append(",");
+            sb.Append(longitude);
+            sb.Append($"&z=17\">{text}</a>");
+            return sb.ToString();
+        }
+
         public static List<ulong> GetNearbyCellIds(UserSetting user)
         {
             var nearbyCellIds = new List<S2CellId>();

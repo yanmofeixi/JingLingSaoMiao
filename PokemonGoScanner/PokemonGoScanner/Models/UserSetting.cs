@@ -1,25 +1,24 @@
 ﻿namespace PokemonGoScanner.Models
 {
-    using Common;
+    using POGOProtos.Enums;
     using System.Collections.Generic;
-
 
     public class UserSetting
     {
         public string UserName;
 
-        public string Email;
+        public string Email = string.Empty;
 
-        public string Password;
+        public string Password = string.Empty;
 
         public double Latitude;
 
         public double Longitude;
 
         //Comma seperated
-        public string EmailToReceiveAlert;
+        public string EmailToReceiveAlert = string.Empty;
 
-        public List<PokemonId> PokemonsToIgnore;
+        public List<PokemonId> PokemonsToIgnore = DefaultIgnoreList;
 
         public static List<UserSetting> InitializeUsers()
         {
@@ -28,12 +27,12 @@
             {
                 new UserSetting
                 {
-                    UserName = "Debug",
-                    Email = "",
-                    Password = "",
-                    Latitude = 47.659265,
-                    Longitude = -122.140394,
-                    PokemonsToIgnore = DefaultIgnoreList
+                    UserName = "Debug-BellevuePark",
+                    Email = "925a1410@gmail.com",
+                    Password = "pokemongo",
+                    Latitude = 47.612579,
+                    Longitude = -122.204208,
+                    EmailToReceiveAlert = "yanmofeixi@gmail.com"
                 }
             };
 #else
