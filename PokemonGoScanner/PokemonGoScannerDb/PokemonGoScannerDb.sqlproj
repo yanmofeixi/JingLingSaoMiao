@@ -69,5 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Local.publish.xml" />
+    <None Include="Cloud.publish.xml" />
   </ItemGroup>
 </Project>
