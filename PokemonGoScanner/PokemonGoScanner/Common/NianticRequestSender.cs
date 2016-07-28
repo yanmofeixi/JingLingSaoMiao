@@ -39,37 +39,8 @@
             httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
         }
 
-        public RequestEnvelope GetRequestEnvelope(UserSetting user, params Request[] customRequests)
-        {
-            return new RequestEnvelope
-            {
-                StatusCode = 2,
-
-                RequestId = 1469378659230941192,
-                Requests = { customRequests },
-
-                //Unknown6 = ,
-                Latitude = user.Latitude,
-                Longitude = user.Longitude,
-                Altitude = Constant.DefaultAltitude,
-                AuthInfo = new AuthInfo
-                {
-                    Provider = "google",
-                    Token = new AuthInfo.Types.JWT
-                    {
-                        Contents = this.authToken,
-                        Unknown2 = 14
-                    }
-                },
-                AuthTicket = this.authTicket,
-                Unknown12 = 989
-            };
-        }
-
         public async Task Initialize(UserSetting user)
         {
-            #region Standard intial request messages in right Order
-
             var getPlayerMessage = new GetPlayerMessage();
             var getHatchedEggsMessage = new GetHatchedEggsMessage();
             var getInventoryMessage = new GetInventoryMessage
@@ -81,8 +52,6 @@
             {
                 Hash = "05daf51635c82611d1aac95c0b051d3ec088a930"
             };
-
-            #endregion
 
             var serverRequest = this.GetRequestEnvelope(
                 user,
@@ -180,6 +149,32 @@
             var decodedResponse = new ResponseEnvelope();
             decodedResponse.MergeFrom(codedStream);
             return decodedResponse;
+        }
+
+
+        private RequestEnvelope GetRequestEnvelope(UserSetting user, params Request[] customRequests)
+        {
+            return new RequestEnvelope
+            {
+                StatusCode = 2,
+                RequestId = 1469378659230941192,
+                Requests = { customRequests },
+                //Unknown6 = ,
+                Latitude = user.Latitude,
+                Longitude = user.Longitude,
+                Altitude = Constant.DefaultAltitude,
+                AuthInfo = new AuthInfo
+                {
+                    Provider = "google",
+                    Token = new AuthInfo.Types.JWT
+                    {
+                        Contents = this.authToken,
+                        Unknown2 = 14
+                    }
+                },
+                AuthTicket = this.authTicket,
+                Unknown12 = 989
+            };
         }
     }
 }
