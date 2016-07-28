@@ -113,10 +113,8 @@
     <Compile Include="Common\GoogleMapHelper.cs" />
     <Compile Include="Common\GPSOAuthClient.cs" />
     <Compile Include="Common\NianticRequestSender.cs" />
-    <Compile Include="Common\ProtoBufHelper.cs" />
     <Compile Include="Common\RetryHelper.cs" />
     <Compile Include="Common\Utility.cs" />
-    <Compile Include="Models\AllEnumReflection.cs" />
     <Compile Include="Models\GoogleDeviceCode.cs" />
     <Compile Include="Models\GoogleTokenResponse.cs" />
     <Compile Include="Models\UserSetting.cs" />

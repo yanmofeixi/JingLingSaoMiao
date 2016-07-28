@@ -6,7 +6,9 @@
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
-    using Models;
+
+    using POGOProtos.Map.Pokemon;
+    using POGOProtos.Map.Fort;
     public static class Utility
     {
         public static long ToUnixTime(this DateTime date)
@@ -54,17 +56,6 @@
                 responseData.Add(parts[0], parts[1]);
             }
             return responseData;
-        }
-
-        public static string GenerateGoogleMapLink(double latitude, double longitude, string text = "Google Map")
-        {
-            var sb = new StringBuilder();
-            sb.Append($"<a href=\"{Constant.GoogleMapUrl}");
-            sb.Append(latitude);
-            sb.Append(",");
-            sb.Append(longitude);
-            sb.Append($"&z=17\">{text}</a>");
-            return sb.ToString();
         }
 
         public static string GetDespawnString(WildPokemon pokemon)

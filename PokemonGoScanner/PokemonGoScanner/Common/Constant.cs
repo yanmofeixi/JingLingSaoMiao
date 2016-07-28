@@ -56,7 +56,7 @@
         public const int RestartDelayInMs = 10000;
 
 #if DEBUG
-        public const bool UseEmailPasswordToLogin = false;
+        public const bool UseEmailPasswordToLogin = true;
 
         public const bool EnableEmailAlert = false;
 #else

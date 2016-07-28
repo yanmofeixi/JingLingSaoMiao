@@ -1,8 +1,7 @@
 ﻿namespace PokemonGoScanner.Models
 {
-    using Common;
+    using POGOProtos.Enums;
     using System.Collections.Generic;
-
 
     public class UserSetting
     {
@@ -29,8 +28,11 @@
                 new UserSetting
                 {
                     UserName = "Debug-BellevuePark",
+                    Email = "925a1410@gmail.com",
+                    Password = "pokemongo",
                     Latitude = 47.612579,
-                    Longitude = -122.204208
+                    Longitude = -122.204208,
+                    EmailToReceiveAlert = "yanmofeixi@gmail.com"
                 }
             };
 #else
