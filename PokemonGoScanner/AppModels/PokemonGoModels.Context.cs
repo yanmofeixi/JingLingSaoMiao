@@ -9,14 +9,14 @@
 
 namespace AppModels
 {
-    using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
-    
+    using Microsoft.Azure;
+
     public partial class PokemonGoScannerDbEntities : DbContext
     {
         public PokemonGoScannerDbEntities()
-            : base("name=PokemonGoScannerDbEntities")
+            : base(CloudConfigurationManager.GetSetting("PokemonGoScannerDbEntities"))
         {
         }
     

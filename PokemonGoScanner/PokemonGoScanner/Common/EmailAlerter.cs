@@ -1,12 +1,8 @@
 ﻿namespace PokemonGoScanner.Common
 {
     using System;
-    using System.Data.Entity;
     using System.Net.Mail;
     using Microsoft.Azure;
-    using AppModels;
-    using System.Threading.Tasks;
-    using System.Linq;
     public class EmailAlerter
     {
         private readonly SmtpClient _smtpServer;

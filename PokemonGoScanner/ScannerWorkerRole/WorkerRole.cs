@@ -97,7 +97,7 @@ namespace ScannerWorkerRole
             var deleted = this.locations.Except(newLocations).ToList();
             var added = newLocations.Except(this.locations).ToList();
 
-            return (deleted.Count != 0 || added.Count != 0);
+            return deleted.Count == 0 && added.Count == 0;
         }
     }
 }
