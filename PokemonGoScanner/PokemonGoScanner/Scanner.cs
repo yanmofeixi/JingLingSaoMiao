@@ -5,21 +5,21 @@
     using System.Net.Mail;
     using System.Threading.Tasks;
 
+    using AppModels;
     using Common;
-    using Models;
     public class Scanner
     {
-        public static async Task ExecuteScan(UserSetting user)
+        public static async Task ExecuteScan(Location location)
         {
             try
             {
                 var googleLogin = new GoogleLogin();
                 var nianticClient = new NianticClient();
-                var emailAlerter = new EmailAlerter(new SmtpClient(Constant.EmailHost), user);
-                await googleLogin.LoginAsync(user);
-                await nianticClient.InitializeAsync(googleLogin.accessToken, user);
-                Trace.TraceInformation($"Start scanning at Latitude:{user.Latitude}, Longitude:{user.Longitude}, for user {user.UserName}");
-                await nianticClient.ScanAsync(user, emailAlerter);
+                var emailAlerter = new EmailAlerter(new SmtpClient(Constant.EmailHost), location);
+                await googleLogin.LoginAsync(location);
+                await nianticClient.InitializeAsync(googleLogin.accessToken, location);
+                Trace.TraceInformation($"Start scanning at {location.Name}");
+                await nianticClient.ScanAsync(location, emailAlerter);
             }
             catch (Exception e)
             {

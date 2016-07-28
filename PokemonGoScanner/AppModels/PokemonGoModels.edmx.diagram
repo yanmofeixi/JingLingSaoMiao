@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="310b1014f7c3483b9bff895aa20cc334" Name="Diagram1">
+      <Diagram DiagramId="1d00fafd5305423b9ec0bb1645b75117" Name="Diagram1">
         <EntityTypeShape EntityType="PokemonGoScannerDbModel.Location" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="PokemonGoScannerDbModel.LocationSubscription" Width="1.5" PointX="5.25" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="PokemonGoScannerDbModel.Scanner" Width="1.5" PointX="0.75" PointY="1.25" IsExpanded="true" />

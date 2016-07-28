@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokemonGoScanner", "PokemonGoScanner\PokemonGoScanner.csproj", "{A4EED102-C037-471D-B68B-039C5073E947}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "PokemonGoScannerDb", "PokemonGoScannerDb\PokemonGoScannerDb.sqlproj", "{418650FD-DDD2-4E98-A5BD-7D13CB7F428B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppModels", "AppModels\AppModels.csproj", "{822B1CC0-B481-434E-B50A-4083F39F0C52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScannerWebRole", "ScannerWebRole\ScannerWebRole.csproj", "{8F5CA2A6-947B-4AB8-9DC8-C46BF808552A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{822B1CC0-B481-434E-B50A-4083F39F0C52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{822B1CC0-B481-434E-B50A-4083F39F0C52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{822B1CC0-B481-434E-B50A-4083F39F0C52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F5CA2A6-947B-4AB8-9DC8-C46BF808552A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F5CA2A6-947B-4AB8-9DC8-C46BF808552A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F5CA2A6-947B-4AB8-9DC8-C46BF808552A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F5CA2A6-947B-4AB8-9DC8-C46BF808552A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

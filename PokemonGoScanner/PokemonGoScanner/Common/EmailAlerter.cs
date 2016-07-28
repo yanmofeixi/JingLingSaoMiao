@@ -1,19 +1,20 @@
-﻿using System;
-using System.Configuration;
-using System.Net.Mail;
-using PokemonGoScanner.Models;
-using Microsoft.Azure;
-
-namespace PokemonGoScanner.Common
+﻿namespace PokemonGoScanner.Common
 {
+    using System;
+    using System.Data.Entity;
+    using System.Net.Mail;
+    using Microsoft.Azure;
+    using AppModels;
+    using System.Threading.Tasks;
+    using System.Linq;
     public class EmailAlerter
     {
         private readonly SmtpClient _smtpServer;
         private readonly string _senderAddress;
         private readonly string _password;
-        private readonly string _receiverAddress;
+        private PokemonGoScannerDbEntities db = new PokemonGoScannerDbEntities();
 
-        public EmailAlerter(SmtpClient smtpClient, UserSetting user)
+        public EmailAlerter(SmtpClient smtpClient)
         {
             this._senderAddress = CloudConfigurationManager.GetSetting("SenderAddress");
             this._password = CloudConfigurationManager.GetSetting("SenderPassword");
@@ -22,21 +23,21 @@ namespace PokemonGoScanner.Common
             _smtpServer.UseDefaultCredentials = false;
             _smtpServer.Port = 587;
             _smtpServer.Credentials = GetCredentialFromConfig();
-            _receiverAddress = user.EmailToReceiveAlert;
         }
 
-        public void Send(string subject, string message)
+        public async Task SendAsync(string subject, string message, Location location)
         {
-            _smtpServer.Send(CreateEmail(subject, message));
+            _smtpServer.Send(await CreateEmailAsync(subject, message, location));
         }
 
-        private MailMessage CreateEmail(string subject, string htmlBody)
+        private async Task<MailMessage> CreateEmailAsync(string subject, string htmlBody, Location location)
         {
             var email = new MailMessage { From = new MailAddress(_senderAddress) };
-            email.To.Add(GetReceiverEmailFromConfig());
+            var locationSubscriptions = await db.LocationSubscriptions.Include(s => s.User).Where(l => l.LocationId == location.Id).ToListAsync();
             email.Subject = subject;
             email.IsBodyHtml = true;
             email.Body = htmlBody;
+            email.To = string.Join(",", locationSubscriptions.Select(l => l.User.EmailForAlert).ToList());
             return email;
         }
 
@@ -52,15 +53,6 @@ namespace PokemonGoScanner.Common
                 throw new ArgumentException($"Cannot find 'SenderPassword' in App.Config or it is not valid");
             }
             return new System.Net.NetworkCredential(_senderAddress, _password);
-        }
-
-        private string GetReceiverEmailFromConfig()
-        {
-            if (string.IsNullOrWhiteSpace(_receiverAddress))
-            {
-                throw new ArgumentException($"Cannot find 'ReceiverEmail' or it is not valid");
-            }
-            return _receiverAddress;
         }
     }
 }

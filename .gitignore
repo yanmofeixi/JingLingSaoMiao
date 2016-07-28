@@ -20,3 +20,5 @@ PokemonGoScanner/.vs/PokemonGoScanner/v14/.suo
 /PokemonGoScanner/PokemonGoScannerDb/bin/*
 /PokemonGoScanner/PokemonGoScannerDb/obj/*
 /PokemonGoScanner/PokemonGoScannerDb/PokemonGoScannerDb.sqlproj.user
+/PokemonGoScanner/ScannerWebRole/obj/*
+/PokemonGoScanner/ScannerWebRole/bin/*

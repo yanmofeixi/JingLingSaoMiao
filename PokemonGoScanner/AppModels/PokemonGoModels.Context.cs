@@ -13,10 +13,10 @@ namespace AppModels
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class PokemonGoScannerDbEntities1 : DbContext
+    public partial class PokemonGoScannerDbEntities : DbContext
     {
-        public PokemonGoScannerDbEntities1()
-            : base("name=PokemonGoScannerDbEntities1")
+        public PokemonGoScannerDbEntities()
+            : base("name=PokemonGoScannerDbEntities")
         {
         }
     

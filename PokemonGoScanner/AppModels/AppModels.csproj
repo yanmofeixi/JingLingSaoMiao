@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AppModels</RootNamespace>
     <AssemblyName>AppModels</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -52,53 +52,58 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Location.cs">
-      <DependentUpon>PokemonGo.tt</DependentUpon>
+      <DependentUpon>PokemonGoModels.tt</DependentUpon>
     </Compile>
     <Compile Include="LocationSubscription.cs">
-      <DependentUpon>PokemonGo.tt</DependentUpon>
+      <DependentUpon>PokemonGoModels.tt</DependentUpon>
     </Compile>
-    <Compile Include="PokemonGo.Context.cs">
+    <Compile Include="PokemonGoModels.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>PokemonGo.Context.tt</DependentUpon>
+      <DependentUpon>PokemonGoModels.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="PokemonGo.Designer.cs">
+    <Compile Include="PokemonGoModels.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>PokemonGo.edmx</DependentUpon>
+      <DependentUpon>PokemonGoModels.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PokemonGoModels.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PokemonGoModels.edmx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scanner.cs">
-      <DependentUpon>PokemonGo.tt</DependentUpon>
+      <DependentUpon>PokemonGoModels.tt</DependentUpon>
     </Compile>
     <Compile Include="User.cs">
-      <DependentUpon>PokemonGo.tt</DependentUpon>
+      <DependentUpon>PokemonGoModels.tt</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
     <None Include="packages.config" />
-    <EntityDeploy Include="PokemonGo.edmx">
+    <EntityDeploy Include="PokemonGoModels.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>PokemonGo.Designer.cs</LastGenOutput>
+      <LastGenOutput>PokemonGoModels.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <None Include="PokemonGo.edmx.diagram">
-      <DependentUpon>PokemonGo.edmx</DependentUpon>
+    <None Include="PokemonGoModels.edmx.diagram">
+      <DependentUpon>PokemonGoModels.edmx</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PokemonGo.Context.tt">
+    <Content Include="PokemonGoModels.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>PokemonGo.edmx</DependentUpon>
-      <LastGenOutput>PokemonGo.Context.cs</LastGenOutput>
+      <DependentUpon>PokemonGoModels.edmx</DependentUpon>
+      <LastGenOutput>PokemonGoModels.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="PokemonGo.tt">
+    <Content Include="PokemonGoModels.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>PokemonGo.edmx</DependentUpon>
-      <LastGenOutput>PokemonGo.cs</LastGenOutput>
+      <DependentUpon>PokemonGoModels.edmx</DependentUpon>
+      <LastGenOutput>PokemonGoModels.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

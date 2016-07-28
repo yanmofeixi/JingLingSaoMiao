@@ -178,7 +178,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="PokemonGoScannerDbEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="PokemonGoScannerDbEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Locations" EntityType="Self.Location" />
           <EntitySet Name="LocationSubscriptions" EntityType="Self.LocationSubscription" />
           <EntitySet Name="Scanners" EntityType="Self.Scanner" />
@@ -201,7 +201,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="PokemonGoScannerDbModelStoreContainer" CdmEntityContainer="PokemonGoScannerDbEntities1">
+        <EntityContainerMapping StorageEntityContainer="PokemonGoScannerDbModelStoreContainer" CdmEntityContainer="PokemonGoScannerDbEntities">
           <EntitySetMapping Name="Locations">
             <EntityTypeMapping TypeName="PokemonGoScannerDbModel.Location">
               <MappingFragment StoreEntitySet="Location">
