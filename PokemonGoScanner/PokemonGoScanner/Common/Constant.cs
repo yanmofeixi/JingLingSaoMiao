@@ -23,6 +23,8 @@
 
         public const int GoogleGetDeviceCodeDelayInMs = 2000;
 
+        public const string GoogleMapUrl = "http://maps.google.com/maps?q=";
+
         public const string AndroidService = "audience:server:client_id:848232511240-7so421jotr2609rmqakceuu1luuq0ptb.apps.googleusercontent.com";
 
         public const string AndroidAppName = "com.nianticlabs.pokemongo";

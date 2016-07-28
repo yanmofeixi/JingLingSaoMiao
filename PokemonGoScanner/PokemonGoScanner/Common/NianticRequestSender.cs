@@ -3,6 +3,7 @@
     using System.Linq;
     using Enum;
     using Models;
+    using POGOProtos.Networking.Requests;
     public static class NianticRequestSender
     {
         public static Request GetInitialRequest(UserSetting user, string token, params RequestType[] customRequestTypes)

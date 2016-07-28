@@ -2,15 +2,25 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Device.Location;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
+    using Models;
     public static class Utility
     {
         public static long ToUnixTime(this DateTime date)
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return Convert.ToInt64((date - epoch).TotalMilliseconds);
+        }
+
+        public static double CalculateDistanceInMeters(double sourceLatitude, double sourceLongitude, double destLatitude, double destLongitude)
+        {
+            var sourceLocation = new GeoCoordinate(sourceLatitude, sourceLongitude);
+            var targetLocation = new GeoCoordinate(destLatitude, destLongitude);
+
+            return sourceLocation.GetDistanceTo(targetLocation);
         }
 
         public static RSAParameters KeyFromB64(string b64Key)
@@ -44,6 +54,41 @@
                 responseData.Add(parts[0], parts[1]);
             }
             return responseData;
+        }
+
+        public static string GenerateGoogleMapLink(double latitude, double longitude, string text = "Google Map")
+        {
+            var sb = new StringBuilder();
+            sb.Append($"<a href=\"{Constant.GoogleMapUrl}");
+            sb.Append(latitude);
+            sb.Append(",");
+            sb.Append(longitude);
+            sb.Append($"&z=17\">{text}</a>");
+            return sb.ToString();
+        }
+
+        public static string GetDespawnString(WildPokemon pokemon)
+        {
+            var despawnSeconds = pokemon.TimeTillHiddenMs;
+            var despawnMinutes = despawnSeconds / 60;
+            despawnSeconds = despawnSeconds % 60;
+            return $", despawn in {despawnMinutes} minutes { despawnSeconds} seconds";
+        }
+
+        public static string GetDespawnString(FortLureInfo lureInfo)
+        {
+            var despawnSeconds = (lureInfo.LureExpiresTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
+            var despawnMinutes = despawnSeconds / 60;
+            despawnSeconds = despawnSeconds % 60;
+            return $", despawn in {despawnMinutes} minutes { despawnSeconds} seconds";
+        }
+
+        public static string GetDespawnString(MapPokemon pokemon)
+        {
+            var despawnSeconds = (pokemon.ExpirationTimestampMs - DateTime.UtcNow.ToUnixTime()) / 1000;
+            var despawnMinutes = despawnSeconds / 60;
+            despawnSeconds = despawnSeconds % 60;
+            return $", despawn in {despawnMinutes} minutes { despawnSeconds} seconds";
         }
 
         public static string CreateSignature(string email, string password, RSAParameters key)
