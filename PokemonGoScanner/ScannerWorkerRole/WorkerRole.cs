@@ -1,17 +1,22 @@
 namespace ScannerWorkerRole
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using AppModels;
     using Microsoft.WindowsAzure.ServiceRuntime;
     using PokemonGoScanner;
     using PokemonGoScanner.Common;
-    using PokemonGoScanner.Models;
+
     public class WorkerRole : RoleEntryPoint
     {
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private PokemonGoScannerDbEntities db = new PokemonGoScannerDbEntities();
+        private List<Location> locations = new List<Location>();
 
         public override void Run()
         {
@@ -19,11 +24,7 @@ namespace ScannerWorkerRole
 
             try
             {
-                var users = UserSetting.InitializeUsers();
-                foreach (var user in users)
-                {
-                    Task.Run(() => this.RunAsync(this.cancellationTokenSource.Token, user));
-                }
+                Task.Run(() => this.RunAsync(this.cancellationTokenSource.Token));
                 while (true)
                 {
                     Thread.Sleep(3600000);
@@ -54,14 +55,49 @@ namespace ScannerWorkerRole
             Trace.TraceInformation("ScannerWorkerRole has stopped");
         }
 
-        private async Task RunAsync(CancellationToken cancellationToken, UserSetting user)
+        private async Task RunAsync(CancellationToken cancellationToken)
         {
+            var runningTasks = new List<CancellationTokenSource>();
             while (!cancellationToken.IsCancellationRequested)
             {
-                Trace.TraceInformation("Working");
-                await Scanner.ExecuteScan(user);
+                var newLocations = db.Locations.ToList();
+                if (!this.IsLocationSame(newLocations))
+                {
+                    foreach(var cancelTokenSource in runningTasks)
+                    {
+                        cancelTokenSource.Cancel();
+                    }
+                    runningTasks.Clear();
+
+                    foreach(var location in newLocations)
+                    {
+                        var cancelTokenSource = new CancellationTokenSource();
+                        runningTasks.Add(cancelTokenSource);
+                        Task.Run(() => this.RunAsyncAtLocation(location, cancelTokenSource.Token));
+                    }
+                    this.locations = newLocations;
+                }
+                await Task.Delay(Constant.ReloadDbDelayInMs);
+            }
+        }
+
+        private async Task RunAsyncAtLocation(Location location, CancellationToken cancelToken)
+        {
+            while (!cancelToken.IsCancellationRequested)
+            {
+                var scanProcessor = new ScannerProcessor();
+                await scanProcessor.InitializeAsync(location);
+                await scanProcessor.ExecuteScan(location, cancelToken);
                 await Task.Delay(Constant.RestartDelayInMs);
             }
+        }
+
+        private bool IsLocationSame(List<Location> newLocations)
+        {
+            var deleted = this.locations.Except(newLocations).ToList();
+            var added = newLocations.Except(this.locations).ToList();
+
+            return deleted.Count == 0 && added.Count == 0;
         }
     }
 }

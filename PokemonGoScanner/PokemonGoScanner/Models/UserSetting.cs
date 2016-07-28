@@ -37,10 +37,10 @@
             };
 #else
             return new List<UserSetting>
-            {
+            {''''
                 new UserSetting
                 {
-                    UserName = "Qiyang Lu-Home",
+                    UserName = "QiyangLuHome",
                     Email = "pkmscanner1@gmail.com",
                     Password = "pokemongo",
                     Latitude = 47.651168,
@@ -88,7 +88,7 @@
 
                 new UserSetting
                 {
-                    UserName = "Redwest-Office",
+                    UserName = "RedwestOffice",
                     Email = "pkmscanner2@gmail.com",
                     Password = "pokemongo",
                     Latitude = 47.659265,
@@ -99,7 +99,7 @@
 
                 new UserSetting
                 {
-                    UserName = "Junwei Hu-Home",
+                    UserName = "JunweiHuHome",
                     Email = "duxiaoccnn@gmail.com",
                     Password = "%TGB6yhn^YHN5tgb",
                     Latitude = 47.678306,
@@ -108,16 +108,16 @@
                     PokemonsToIgnore = DefaultIgnoreList
                 },
 
-                new UserSetting
-                {
-                    UserName = "Futao Lu",
-                    Email = "futaopokemon@gmail.com",
-                    Password = "lft19900504",
-                    Latitude = 22.2792094,
-                    Longitude = 114.1286509,
-                    EmailToReceiveAlert = "lufutao@hku.hk",
-                    PokemonsToIgnore = DefaultIgnoreList
-                },
+                //new UserSetting
+                //{
+                //    UserName = "Futao Lu",
+                //    Email = "futaopokemon@gmail.com",
+                //    Password = "lft19900504",
+                //    Latitude = 22.2792094,
+                //    Longitude = 114.1286509,
+                //    EmailToReceiveAlert = "lufutao@hku.hk",
+                //    PokemonsToIgnore = DefaultIgnoreList
+                //},
             };
 #endif
         }

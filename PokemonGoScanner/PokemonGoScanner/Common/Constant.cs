@@ -55,6 +55,8 @@
 
         public const int RestartDelayInMs = 10000;
 
+        public const int ReloadDbDelayInMs = 600000;
+
 #if DEBUG
         public const bool UseEmailPasswordToLogin = true;
 

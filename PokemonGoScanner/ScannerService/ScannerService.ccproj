@@ -38,6 +38,14 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ScannerWebRole\ScannerWebRole.csproj">
+      <Name>ScannerWebRole</Name>
+      <Project>{8f5ca2a6-947b-4ab8-9dc8-c46bf808552a}</Project>
+      <Private>True</Private>
+      <RoleType>Web</RoleType>
+      <RoleName>ScannerWebRole</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
     <ProjectReference Include="..\ScannerWorkerRole\ScannerWorkerRole.csproj">
       <Name>ScannerWorkerRole</Name>
       <Project>{4985c797-26b7-477d-9edd-0e46ac3b7eba}</Project>
@@ -49,9 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Profiles" />
+    <Folder Include="ScannerWebRoleContent\" />
     <Folder Include="ScannerWorkerRoleContent\" />
   </ItemGroup>
   <ItemGroup>
+    <DiagnosticsConfiguration Include="ScannerWebRoleContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="ScannerWorkerRoleContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <ItemGroup>

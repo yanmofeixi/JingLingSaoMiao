@@ -1,39 +1,37 @@
-﻿using System;
-using System.Configuration;
-using System.Net.Mail;
-using PokemonGoScanner.Models;
-
-namespace PokemonGoScanner.Common
+﻿namespace PokemonGoScanner.Common
 {
+    using System;
+    using System.Net.Mail;
+    using Microsoft.Azure;
     public class EmailAlerter
     {
         private readonly SmtpClient _smtpServer;
-        private readonly string _senderAddress = ConfigurationManager.AppSettings["SenderAddress"];
-        private readonly string _password = ConfigurationManager.AppSettings["SenderPassword"];
-        private readonly string _receiverAddress;
+        private readonly string _senderAddress;
+        private readonly string _password;
 
-        public EmailAlerter(SmtpClient smtpClient, UserSetting user)
+        public EmailAlerter(SmtpClient smtpClient)
         {
+            this._senderAddress = CloudConfigurationManager.GetSetting("SenderAddress");
+            this._password = CloudConfigurationManager.GetSetting("SenderPassword");
             _smtpServer = smtpClient;
             _smtpServer.EnableSsl = true;
             _smtpServer.UseDefaultCredentials = false;
             _smtpServer.Port = 587;
             _smtpServer.Credentials = GetCredentialFromConfig();
-            _receiverAddress = user.EmailToReceiveAlert;
         }
 
-        public void Send(string subject, string message)
+        public void Send(string subject, string message, string emailForReceiving)
         {
-            _smtpServer.Send(CreateEmail(subject, message));
+            _smtpServer.Send(CreateEmail(subject, message, emailForReceiving));
         }
 
-        private MailMessage CreateEmail(string subject, string htmlBody)
+        private MailMessage CreateEmail(string subject, string htmlBody, string emailForReceiving)
         {
             var email = new MailMessage { From = new MailAddress(_senderAddress) };
-            email.To.Add(GetReceiverEmailFromConfig());
             email.Subject = subject;
             email.IsBodyHtml = true;
             email.Body = htmlBody;
+            email.To.Add(emailForReceiving);
             return email;
         }
 
@@ -49,15 +47,6 @@ namespace PokemonGoScanner.Common
                 throw new ArgumentException($"Cannot find 'SenderPassword' in App.Config or it is not valid");
             }
             return new System.Net.NetworkCredential(_senderAddress, _password);
-        }
-
-        private string GetReceiverEmailFromConfig()
-        {
-            if (string.IsNullOrWhiteSpace(_receiverAddress))
-            {
-                throw new ArgumentException($"Cannot find 'ReceiverEmail' or it is not valid");
-            }
-            return _receiverAddress;
         }
     }
 }

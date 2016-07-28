@@ -18,5 +18,7 @@
     <AzureStorageAccountLabel>PokemonScannerService</AzureStorageAccountLabel>
     <AzureStorageAccountName>pokemonscannerservice</AzureStorageAccountName>
     <AzureAppendTimestampToDeploymentLabel>True</AzureAppendTimestampToDeploymentLabel>
+    <EnableRemoteDebugger>False</EnableRemoteDebugger>
+    <RemoteDebuggerConnectorCertificateThumbprint>9906D7973A50496343C6731331181ED410AE6AEF</RemoteDebuggerConnectorCertificateThumbprint>
   </PropertyGroup>
 </Project>
