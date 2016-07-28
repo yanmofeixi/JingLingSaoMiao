@@ -4,6 +4,9 @@
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" />
+      <Setting name="DbConnectionString"/>
+      <Setting name="SenderAddress"/>
+      <Setting name="SenderPassword"/>
     </ConfigurationSettings>
   </WorkerRole>
 </ServiceDefinition>

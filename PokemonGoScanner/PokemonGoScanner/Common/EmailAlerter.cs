@@ -2,18 +2,21 @@
 using System.Configuration;
 using System.Net.Mail;
 using PokemonGoScanner.Models;
+using Microsoft.Azure;
 
 namespace PokemonGoScanner.Common
 {
     public class EmailAlerter
     {
         private readonly SmtpClient _smtpServer;
-        private readonly string _senderAddress = ConfigurationManager.AppSettings["SenderAddress"];
-        private readonly string _password = ConfigurationManager.AppSettings["SenderPassword"];
+        private readonly string _senderAddress;
+        private readonly string _password;
         private readonly string _receiverAddress;
 
         public EmailAlerter(SmtpClient smtpClient, UserSetting user)
         {
+            this._senderAddress = CloudConfigurationManager.GetSetting("SenderAddress");
+            this._password = CloudConfigurationManager.GetSetting("SenderPassword");
             _smtpServer = smtpClient;
             _smtpServer.EnableSsl = true;
             _smtpServer.UseDefaultCredentials = false;

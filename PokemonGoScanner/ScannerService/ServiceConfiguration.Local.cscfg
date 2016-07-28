@@ -5,6 +5,9 @@
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
       <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="db97d789-639f-47df-bdef-673dc016490a" />
+      <Setting name="DbConnectionString" value="Server=(localdb)\\v11.0;Integrated Security=true;"/>
+      <Setting name="SenderAddress" value="duxiaoccnn@gmail.com" />
+      <Setting name="SenderPassword" value="%TGB6yhn^YHN5tgb" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

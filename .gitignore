@@ -15,3 +15,8 @@ PokemonGoScanner/ScannerWorkerRole/Properties/AssemblyInfo.cs
 PokemonGoScanner/PokemonGoScanner/PokemonGoScanner.csproj.user
 PokemonGoScanner/.vs/PokemonGoScanner/v14/.suo
 /PokemonGoScanner/.vs/config/applicationhost.config
+/PokemonGoScanner/AppModels/obj/*
+/PokemonGoScanner/AppModels/bin/*
+/PokemonGoScanner/PokemonGoScannerDb/bin/*
+/PokemonGoScanner/PokemonGoScannerDb/obj/*
+/PokemonGoScanner/PokemonGoScannerDb/PokemonGoScannerDb.sqlproj.user
