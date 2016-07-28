@@ -1,19 +1,17 @@
 ﻿namespace PokemonGoScanner
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
 
+    using AppModels;
     using Common;
-    using Google.Protobuf;
-    using Models;
-    using POGOProtos.Networking.Requests;
+    using POGOProtos.Enums;
     using POGOProtos.Map.Fort;
     using POGOProtos.Map.Pokemon;
-    using POGOProtos.Networking.Responses;
     public class NianticClient
     {
         private NianticRequestSender requestSender;
@@ -22,47 +20,64 @@
         private List<WildPokemon> pokemonsLessThanTwoStep;
         private List<NearbyPokemon> pokemonsMoreThanTwoStep;
         private List<FortData> nearByPokeStops;
+        private Location scanLocation;
+        private PokemonGoScannerDbEntities db = new PokemonGoScannerDbEntities();
 
-        public NianticClient()
+        public NianticClient(Location location)
         {
-
+            this.scanLocation = location;
         }
 
-        public async Task InitializeAsync(string google_token, UserSetting user)
+        public async Task InitializeAsync(string google_token)
         {
             this.requestSender = new NianticRequestSender(google_token);
-            await this.requestSender.Initialize(user);
+            await this.requestSender.Initialize(this.scanLocation);
         }
 
-        public async Task ScanAsync(UserSetting user, EmailAlerter alerter)
+        public async Task ScanAsync(EmailAlerter alerter, CancellationToken cancelToken)
         {
-            while (true)
+            while (!cancelToken.IsCancellationRequested)
             {
-                await this.GetPokemonsAsync(user);
-                this.Print(user);
-                if (Constant.EnableEmailAlert && (this.HasNewRarePokemonSpawned(user) || this.HasNewRarePokemonBeenLured(user)))
-                {
-                    var html = PrintToHtml(user);
-                    alerter.Send($"{user.UserName}", html);
-                    this.lastScannedPokemons = this.pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
-                    this.lastScannedPokemons.AddRange(this.nearByPokeStops.Select(p => p.LureInfo.EncounterId).ToList());
-                }
+                await this.GetPokemonsAsync(this.scanLocation);
+                this.Print();
+                this.SendEmailForSubscribedUsers(alerter);
+                this.lastScannedPokemons = this.pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
+                this.lastScannedPokemons.AddRange(this.nearByPokeStops.Select(p => p.LureInfo.EncounterId).ToList());
                 Trace.TraceInformation($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
                 await Task.Delay(Constant.ScanDelayInSeconds * 1000);
                 Trace.TraceInformation("");
             }
         }
 
-        private async Task GetPokemonsAsync(UserSetting user)
+        private void SendEmailForSubscribedUsers(EmailAlerter alerter)
         {
-            var response = await this.requestSender.SendMapRequest(user);
+            if (Constant.EnableEmailAlert)
+            {
+                var subscriptions = db.LocationSubscriptions.Where(l => l.LocationId == this.scanLocation.Id);
+                var subscribedUsers = subscriptions.Where(sb => sb.User.IsActive).Select(s => s.User);
+                foreach (var user in subscribedUsers)
+                {
+                    var list = Utility.ConvertToPokemonIdList(user.IgnoreList);
+                    if (this.HasNewRarePokemonSpawned(list) || this.HasNewRarePokemonBeenLured(list))
+                    {
+                        var html = PrintToHtml(list);
+                        alerter.Send($"{this.scanLocation.Name}", html, user.EmailForAlert);
+                    }
+                }
+            }
+        }
+
+
+        private async Task GetPokemonsAsync(Location location)
+        {
+            var response = await this.requestSender.SendMapRequest(location);
             this.nearByPokeStops = response.MapCells.SelectMany(x => x.Forts).Where(y => y.Type == FortType.Checkpoint && y.LureInfo != null).ToList();
             this.pokemonsLessThanOneStep = response.MapCells.SelectMany(x => x.CatchablePokemons).ToList();
             this.pokemonsLessThanTwoStep = response.MapCells.SelectMany(x => x.WildPokemons).ToList();
             this.pokemonsMoreThanTwoStep = response.MapCells.SelectMany(x => x.NearbyPokemons).ToList();
         }
 
-        private void Print(UserSetting user)
+        private void Print()
         {
             List<ulong> printedIds = new List<ulong>();
 
@@ -108,7 +123,7 @@
             Trace.TraceInformation("");
         }
 
-        public string PrintToHtml(UserSetting user)
+        public string PrintToHtml(List<PokemonId> ignoreList)
         {
             var printedIds = new List<ulong>();
             var sb = new StringBuilder();           
@@ -117,8 +132,8 @@
                 sb.AppendLine("<h2>Pokemon within 1 step:</h2>");
                 foreach (var pokemon in this.pokemonsLessThanOneStep)
                 {
-                    var color = user.PokemonsToIgnore.Contains(pokemon.PokemonId) ? "Black" : "Red";
-                    sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonId} at {GoogleMapHelper.GetGMapLink(pokemon.Latitude, pokemon.Longitude)} "
+                    var color = ignoreList.Contains(pokemon.PokemonId) ? "Black" : "Red";
+                    sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonId} at {GoogleMapHelper.GetGMapLink(this.scanLocation)} "
                         + $", spawnId: {pokemon.SpawnPointId}{Utility.GetDespawnString(pokemon)}</font></p>");
                     printedIds.Add(pokemon.EncounterId);
                 }
@@ -129,8 +144,8 @@
                 sb.AppendLine("<h2>Pokemons lured at pokestops:</h2>");
                 foreach (var pokeStop in this.nearByPokeStops)
                 {
-                    var color = user.PokemonsToIgnore.Contains(pokeStop.LureInfo.ActivePokemonId) ? "Black" : "Red";
-                    sb.Append($"<p><font color=\"{color}\">{pokeStop.LureInfo.ActivePokemonId} at {GoogleMapHelper.GetGMapLink(pokeStop.Latitude, pokeStop.Longitude, "this PokeStop")} "
+                    var color = ignoreList.Contains(pokeStop.LureInfo.ActivePokemonId) ? "Black" : "Red";
+                    sb.Append($"<p><font color=\"{color}\">{pokeStop.LureInfo.ActivePokemonId} at {GoogleMapHelper.GetGMapLink(this.scanLocation, "this PokeStop")} "
                         + $", PokeStopId: {pokeStop.Id}{Utility.GetDespawnString(pokeStop.LureInfo)}</font></p>");
                 }
             }
@@ -143,8 +158,8 @@
                 {
                     if (!printedIds.Contains(pokemon.EncounterId))
                     {
-                        var color = user.PokemonsToIgnore.Contains(pokemon.PokemonData.PokemonId) ? "Black" : "Red";
-                        sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonData.PokemonId} at {GoogleMapHelper.GetGMapLink(pokemon.Latitude, pokemon.Longitude)} "
+                        var color = ignoreList.Contains(pokemon.PokemonData.PokemonId) ? "Black" : "Red";
+                        sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonData.PokemonId} at {GoogleMapHelper.GetGMapLink(this.scanLocation)} "
                             + $", spawnId: {pokemon.SpawnPointId}{Utility.GetDespawnString(pokemon)}</font></p>");
                         printedIds.Add(pokemon.EncounterId);
                     }
@@ -157,7 +172,7 @@
                 {
                     if (!printedIds.Contains(pokemon.EncounterId))
                     {
-                        var color = user.PokemonsToIgnore.Contains(pokemon.PokemonId)? "Black": "Red";
+                        var color = ignoreList.Contains(pokemon.PokemonId)? "Black": "Red";
                         sb.Append($"<p><font color=\"{color}\">{pokemon.PokemonId}</p>");
                         printedIds.Add(pokemon.EncounterId);
                     }
@@ -166,16 +181,16 @@
             return sb.ToString();
         }
 
-        private bool HasNewRarePokemonSpawned(UserSetting user)
+        private bool HasNewRarePokemonSpawned(List<PokemonId> ignoreList)
         {
-            return this.pokemonsMoreThanTwoStep.Any(p => !user.PokemonsToIgnore.Contains(p.PokemonId) &&
+            return this.pokemonsMoreThanTwoStep.Any(p => !ignoreList.Contains(p.PokemonId) &&
                     !this.lastScannedPokemons.Contains(p.EncounterId));
         }
 
-        private bool HasNewRarePokemonBeenLured(UserSetting user)
+        private bool HasNewRarePokemonBeenLured(List<PokemonId> ignoreList)
         {
             return this.nearByPokeStops != null &&
-                   this.nearByPokeStops.Any(p => !user.PokemonsToIgnore.Contains(p.LureInfo.ActivePokemonId) &&
+                   this.nearByPokeStops.Any(p => !ignoreList.Contains(p.LureInfo.ActivePokemonId) &&
                    !this.lastScannedPokemons.Contains(p.LureInfo.EncounterId));
         }
     }

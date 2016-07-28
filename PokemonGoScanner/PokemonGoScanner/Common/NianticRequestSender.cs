@@ -1,17 +1,17 @@
 ﻿namespace PokemonGoScanner.Common
 {
     using System;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+
     using POGOProtos.Networking.Requests;
     using POGOProtos.Networking.Requests.Messages;
     using POGOProtos.Networking.Responses;
     using POGOProtos.Networking.Envelopes;
     using static POGOProtos.Networking.Envelopes.RequestEnvelope.Types;
     using Google.Protobuf;
-
-    using Models;
-    using System.Net;
+    using AppModels;
     public class NianticRequestSender
     {
         private string authToken;
@@ -39,7 +39,7 @@
             httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/x-www-form-urlencoded");
         }
 
-        public async Task Initialize(UserSetting user)
+        public async Task Initialize(Location location)
         {
             var getPlayerMessage = new GetPlayerMessage();
             var getHatchedEggsMessage = new GetHatchedEggsMessage();
@@ -54,7 +54,7 @@
             };
 
             var serverRequest = this.GetRequestEnvelope(
-                user,
+                location,
                 new Request
                 {
                     RequestType = RequestType.GetPlayer,
@@ -84,14 +84,14 @@
             this.apiUri = response.ApiUrl;
         }
 
-        public async Task<GetMapObjectsResponse> SendMapRequest(UserSetting user)
+        public async Task<GetMapObjectsResponse> SendMapRequest(Location location)
         {
             var getMapObjectsMessage = new GetMapObjectsMessage
             {
-                CellId = { GoogleMapHelper.GetNearbyCellIds(user) },
+                CellId = { GoogleMapHelper.GetNearbyCellIds(location) },
                 SinceTimestampMs = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-                Latitude = user.Latitude,
-                Longitude = user.Longitude
+                Latitude = location.Latitude,
+                Longitude = location.Longitude
             };
             var getHatchedEggsMessage = new GetHatchedEggsMessage();
             var getInventoryMessage = new GetInventoryMessage
@@ -105,7 +105,7 @@
             };
 
             var request = this.GetRequestEnvelope(
-                user,
+                location,
                 new Request
                 {
                     RequestType = RequestType.GetMapObjects,
@@ -152,7 +152,7 @@
         }
 
 
-        private RequestEnvelope GetRequestEnvelope(UserSetting user, params Request[] customRequests)
+        private RequestEnvelope GetRequestEnvelope(Location location, params Request[] customRequests)
         {
             return new RequestEnvelope
             {
@@ -160,8 +160,8 @@
                 RequestId = 1469378659230941192,
                 Requests = { customRequests },
                 //Unknown6 = ,
-                Latitude = user.Latitude,
-                Longitude = user.Longitude,
+                Latitude = location.Latitude,
+                Longitude = location.Longitude,
                 Altitude = Constant.DefaultAltitude,
                 AuthInfo = new AuthInfo
                 {

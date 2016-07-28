@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using AppModels;
-using ScannerWebRole.Models;
-
-namespace ScannerWebRole.Controllers
+﻿namespace ScannerWebRole.Controllers
 {
+    using System.Data.Entity;
+    using System.Linq;
+    using System.Net;
+    using System.Web.Mvc;
+    using AppModels;
     public class ScannersController : Controller
     {
         private PokemonGoScannerDbEntities db = new PokemonGoScannerDbEntities();

@@ -12,7 +12,6 @@
         private readonly SmtpClient _smtpServer;
         private readonly string _senderAddress;
         private readonly string _password;
-        private PokemonGoScannerDbEntities db = new PokemonGoScannerDbEntities();
 
         public EmailAlerter(SmtpClient smtpClient)
         {
@@ -25,19 +24,18 @@
             _smtpServer.Credentials = GetCredentialFromConfig();
         }
 
-        public async Task SendAsync(string subject, string message, Location location)
+        public void Send(string subject, string message, string emailForReceiving)
         {
-            _smtpServer.Send(await CreateEmailAsync(subject, message, location));
+            _smtpServer.Send(CreateEmail(subject, message, emailForReceiving));
         }
 
-        private async Task<MailMessage> CreateEmailAsync(string subject, string htmlBody, Location location)
+        private MailMessage CreateEmail(string subject, string htmlBody, string emailForReceiving)
         {
             var email = new MailMessage { From = new MailAddress(_senderAddress) };
-            var locationSubscriptions = await db.LocationSubscriptions.Include(s => s.User).Where(l => l.LocationId == location.Id).ToListAsync();
             email.Subject = subject;
             email.IsBodyHtml = true;
             email.Body = htmlBody;
-            email.To = string.Join(",", locationSubscriptions.Select(l => l.User.EmailForAlert).ToList());
+            email.To.Add(emailForReceiving);
             return email;
         }
 

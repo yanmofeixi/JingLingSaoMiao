@@ -11,17 +11,18 @@
     using System.Threading.Tasks;
     using System.Windows.Forms;
 
+    using AppModels;
     using Models;
     using Newtonsoft.Json;
     public class GoogleLogin
     {
         public string accessToken{get;set;}
 
-        public async Task LoginAsync(UserSetting user)
+        public async Task LoginAsync(Scanner scanner)
         {
             if (Constant.UseEmailPasswordToLogin)
             {
-                var gpsoAuthClient = new GPSOAuthClient(user.Email, user.Password);
+                var gpsoAuthClient = new GPSOAuthClient(scanner.Email, scanner.Password);
                 var response = gpsoAuthClient.PerformMasterLogin();
                 var json = JsonConvert.SerializeObject(response, Formatting.Indented);
                 if (response.ContainsKey("Token"))
@@ -38,7 +39,7 @@
             }
             else
             {
-                string refreshToken = string.Empty;
+                var refreshToken = string.Empty;
                 if (File.Exists(Constant.GoogleRefreshTokenPath))
                 {
                     refreshToken = File.ReadAllText(Constant.GoogleRefreshTokenPath);

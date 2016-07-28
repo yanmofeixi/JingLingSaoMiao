@@ -9,12 +9,24 @@
 
     using POGOProtos.Map.Pokemon;
     using POGOProtos.Map.Fort;
+    using POGOProtos.Enums;
     public static class Utility
     {
         public static long ToUnixTime(this DateTime date)
         {
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return Convert.ToInt64((date - epoch).TotalMilliseconds);
+        }
+
+        public static List<PokemonId> ConvertToPokemonIdList(string ignoreList)
+        {
+            var stringList = ignoreList.Split(',');
+            var result = new List<PokemonId>();
+            foreach(var id in stringList)
+            {
+                result.Add((PokemonId)(int.Parse(id)));
+            }
+            return result;
         }
 
         public static double CalculateDistanceInMeters(double sourceLatitude, double sourceLongitude, double destLatitude, double destLongitude)

@@ -3,11 +3,17 @@
   <Role name="ScannerWorkerRole">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
-      <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="db97d789-639f-47df-bdef-673dc016490a" />
       <Setting name="SenderAddress" value="duxiaoccnn@gmail.com" />
       <Setting name="SenderPassword" value="%TGB6yhn^YHN5tgb" />
-      <Setting name="DbConnectionString" value="Server=tcp:q4bt3rwqk7.database.windows.net,1433;Database=PokemonGoScannerDb;User ID=ymfx;Password=PokemonGo123!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"/>
+      <Setting name="DefaultConnection" value="Server=tcp:q4bt3rwqk7.database.windows.net,1433;Database=ApplicationDb;User ID=ymfx@q4bt3rwqk7;Password=PokemonGo123!;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;" />
+      <Setting name="PokemonGoScannerDbEntities" value="Server=tcp:q4bt3rwqk7.database.windows.net,1433;Database=PokemonGoScannerDb;User ID=ymfx@q4bt3rwqk7;Password=PokemonGo123!;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;" />
+    </ConfigurationSettings>
+  </Role>
+  <Role name="ScannerWebRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="DefaultConnection" value="Server=tcp:q4bt3rwqk7.database.windows.net,1433;Database=ApplicationDb;User ID=ymfx@q4bt3rwqk7;Password=PokemonGo123!;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;" />
+      <Setting name="PokemonGoScannerDbEntities" value="Server=tcp:q4bt3rwqk7.database.windows.net,1433;Database=PokemonGoScannerDb;User ID=ymfx@q4bt3rwqk7;Password=PokemonGo123!;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>
