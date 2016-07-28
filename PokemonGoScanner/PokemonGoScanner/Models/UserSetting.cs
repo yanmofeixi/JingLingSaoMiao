@@ -111,7 +111,7 @@
                 new UserSetting
                 {
                     UserName = "Futao Lu",
-                    Email = "futaopokemongo@gmail.com",
+                    Email = "futaopokemon@gmail.com",
                     Password = "lft19900504",
                     Latitude = 22.2792094,
                     Longitude = 114.1286509,
