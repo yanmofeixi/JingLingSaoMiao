@@ -145,7 +145,7 @@
                 foreach (var pokeStop in this.nearByPokeStops)
                 {
                     var color = ignoreList.Contains(pokeStop.LureInfo.ActivePokemonId) ? "Black" : "Red";
-                    sb.Append($"<p><font color=\"{color}\">{pokeStop.LureInfo.ActivePokemonId} at {GoogleMapHelper.GetGMapLink(this.scanLocation, "this PokeStop")} "
+                    sb.Append($"<p><font color=\"{color}\">{pokeStop.LureInfo.ActivePokemonId} at {GoogleMapHelper.GetGMapLink(pokeStop)} "
                         + $", PokeStopId: {pokeStop.Id}{Utility.GetDespawnString(pokeStop.LureInfo)}</font></p>");
                 }
             }
@@ -183,7 +183,7 @@
 
         private bool HasNewRarePokemonSpawned(List<PokemonId> ignoreList)
         {
-            return this.pokemonsMoreThanTwoStep.Any(p => !ignoreList.Contains(p.PokemonId) &&
+            return this.pokemonsLessThanTwoStep.Any(p => !ignoreList.Contains(p.PokemonData.PokemonId) &&
                     !this.lastScannedPokemons.Contains(p.EncounterId));
         }
 

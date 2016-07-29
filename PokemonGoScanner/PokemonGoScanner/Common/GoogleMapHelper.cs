@@ -6,6 +6,7 @@
 
     using AppModels;
     using Google.Common.Geometry;
+    using POGOProtos.Map.Fort;
     public class GoogleMapHelper
     {
         public static string GetGMapLink(Location location, string text = "Google Map")
@@ -15,6 +16,17 @@
             sb.Append(location.Latitude);
             sb.Append(",");
             sb.Append(location.Longitude);
+            sb.Append($"&z=17\">{text}</a>");
+            return sb.ToString();
+        }
+
+        public static string GetGMapLink(FortData pokestop, string text = "this pokestop")
+        {
+            var sb = new StringBuilder();
+            sb.Append($"<a href=\"{Constant.GoogleMapUrl}");
+            sb.Append(pokestop.Latitude);
+            sb.Append(",");
+            sb.Append(pokestop.Longitude);
             sb.Append($"&z=17\">{text}</a>");
             return sb.ToString();
         }
