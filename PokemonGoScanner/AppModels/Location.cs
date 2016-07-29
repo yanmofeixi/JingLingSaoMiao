@@ -11,7 +11,7 @@ namespace AppModels
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel;
     public partial class Location
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -21,6 +21,8 @@ namespace AppModels
         }
     
         public int Id { get; set; }
+
+        [DisplayName("Location")]
         public string Name { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }

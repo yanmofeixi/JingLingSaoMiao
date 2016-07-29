@@ -11,7 +11,7 @@ namespace AppModels
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel;
     public partial class Scanner
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -21,6 +21,7 @@ namespace AppModels
         }
     
         public int Id { get; set; }
+        [DisplayName("ScannerAccount")]
         public string Email { get; set; }
         public string Password { get; set; }
     
