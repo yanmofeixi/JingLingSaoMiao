@@ -3,16 +3,17 @@
     using System;
     using System.Net.Mail;
     using Microsoft.Azure;
+    using AppModels;
     public class EmailAlerter
     {
         private readonly SmtpClient _smtpServer;
         private readonly string _senderAddress;
         private readonly string _password;
 
-        public EmailAlerter(SmtpClient smtpClient)
+        public EmailAlerter(SmtpClient smtpClient, Scanner scanner)
         {
-            this._senderAddress = CloudConfigurationManager.GetSetting("SenderAddress");
-            this._password = CloudConfigurationManager.GetSetting("SenderPassword");
+            this._senderAddress = scanner.Email;
+            this._password = scanner.Password;
             _smtpServer = smtpClient;
             _smtpServer.EnableSsl = true;
             _smtpServer.UseDefaultCredentials = false;

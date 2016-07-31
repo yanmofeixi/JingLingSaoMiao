@@ -3,8 +3,6 @@
   <Role name="ScannerWorkerRole">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="SenderAddress" value="duxiaoccnn@gmail.com" />
-      <Setting name="SenderPassword" value="%TGB6yhn^YHN5tgb" />
       <Setting name="DefaultConnection" value="Data Source=q4bt3rwqk7.database.windows.net;Initial Catalog=PokemonGoScannerDb;Integrated Security=False;User ID=ymfx;Password=PokemonGo123!;Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;" />
       <Setting name="PokemonGoScannerDbEntities" value="metadata=res://*/PokemonGoModels.csdl|res://*/PokemonGoModels.ssdl|res://*/PokemonGoModels.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=q4bt3rwqk7.database.windows.net;User ID=ymfx;Password=PokemonGo123!;initial catalog=PokemonGoScannerDb;Trusted_Connection=False;Encrypt=True;MultipleActiveResultSets=True;App=EntityFramework&quot;" />
     </ConfigurationSettings>
