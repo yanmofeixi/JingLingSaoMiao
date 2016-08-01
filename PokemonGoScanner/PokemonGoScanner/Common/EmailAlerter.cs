@@ -10,12 +10,12 @@
         private readonly string _senderAddress;
         private readonly string _password;
 
-        public EmailAlerter(SmtpClient smtpClient, Scanner scanner)
+        public EmailAlerter(Scanner scanner)
         {
             this._senderAddress = scanner.Email;
             this._password = scanner.Password;
+            _smtpServer = new SmtpClient(Constant.EmailHost);
             _smtpServer.DeliveryMethod = SmtpDeliveryMethod.Network;
-            _smtpServer = smtpClient;
             _smtpServer.EnableSsl = true;
             _smtpServer.UseDefaultCredentials = false;
             _smtpServer.Port = 587;

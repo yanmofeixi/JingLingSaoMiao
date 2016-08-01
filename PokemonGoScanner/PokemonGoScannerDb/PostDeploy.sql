@@ -16,7 +16,7 @@ VALUES ([Email], [Password]);
 
 MERGE INTO [dbo].[User] AS Target 
 USING (VALUES 
-        ('QiyangLu', 'yanmofeixi@gmail.com', '', 1)
+        ('QiyangLu', 'yanmofeixi@gmail.com', '150', 1)
 ) 
 AS Source ([UserName], [EmailForAlert], [IgnoreList], [IsActive]) 
 ON (Target.[UserName] LIKE Source.[UserName]

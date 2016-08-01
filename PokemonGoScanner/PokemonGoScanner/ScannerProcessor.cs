@@ -21,7 +21,7 @@
             var scanner = db.Locations.SingleOrDefault(l => l.Id == location.Id).Scanner;
             this.googleLogin = new GoogleLogin();
             this.nianticClient = new NianticClient(location);
-            this.emailAlerter = new EmailAlerter(new SmtpClient(Constant.EmailHost), scanner);
+            this.emailAlerter = new EmailAlerter(scanner);
             await this.googleLogin.LoginAsync(scanner);
             await this.nianticClient.InitializeAsync(googleLogin.accessToken);
         }
