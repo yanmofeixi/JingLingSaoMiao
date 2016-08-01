@@ -49,7 +49,7 @@
 
         public const int ScanRange = 10;
 
-        public const int ScanDelayInSeconds = 60;
+        public const int ScanDelayInSeconds = 30;
 
         public const string EmailHost = "smtp.gmail.com";
 

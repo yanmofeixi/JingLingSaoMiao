@@ -87,7 +87,7 @@ namespace ScannerWorkerRole
             {
                 var scanProcessor = new ScannerProcessor();
                 await scanProcessor.InitializeAsync(location);
-                await scanProcessor.ExecuteScan(location, cancelToken);
+                await scanProcessor.ExecuteContinuousScanAsync(cancelToken);
                 await Task.Delay(Constant.RestartDelayInMs);
             }
         }

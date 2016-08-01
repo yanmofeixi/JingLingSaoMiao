@@ -34,19 +34,25 @@
             await this.requestSender.Initialize(this.scanLocation);
         }
 
-        public async Task ScanAsync(EmailAlerter alerter, CancellationToken cancelToken)
+        public async Task ContinuousScanScanAsync(EmailAlerter alerter, CancellationToken cancelToken)
         {
+            Trace.TraceInformation($"Start continous scanning at {this.scanLocation.Name}");
             while (!cancelToken.IsCancellationRequested)
             {
-                await this.GetPokemonsAsync(this.scanLocation);
-                this.Print();
-                this.SendEmailForSubscribedUsers(alerter);
-                this.lastScannedPokemons = this.pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
-                this.lastScannedPokemons.AddRange(this.nearByPokeStops.Select(p => p.LureInfo.EncounterId).ToList());
-                Trace.TraceInformation($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
+                await this.ScanAsync(alerter, cancelToken);
                 await Task.Delay(Constant.ScanDelayInSeconds * 1000);
-                Trace.TraceInformation("");
             }
+        }
+
+        public async Task ScanAsync(EmailAlerter alerter, CancellationToken cancelToken)
+        {
+            Trace.TraceInformation($"Scanning at {this.scanLocation.Name}");
+            await this.GetPokemonsAsync(this.scanLocation);
+            this.Print();
+            this.SendEmailForSubscribedUsers(alerter);
+            this.lastScannedPokemons = this.pokemonsMoreThanTwoStep.Select(p => p.EncounterId).ToList();
+            this.lastScannedPokemons.AddRange(this.nearByPokeStops.Select(p => p.LureInfo.EncounterId).ToList());
+            Trace.TraceInformation($"Found {this.pokemonsMoreThanTwoStep.Count} pokemons. Rescan in {Constant.ScanDelayInSeconds} seconds");
         }
 
         private void SendEmailForSubscribedUsers(EmailAlerter alerter)

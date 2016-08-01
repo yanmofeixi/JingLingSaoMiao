@@ -26,11 +26,23 @@
             await this.nianticClient.InitializeAsync(googleLogin.accessToken);
         }
 
-        public async Task ExecuteScan(Location location, CancellationToken cancelToken)
+        public async Task ExecuteContinuousScanAsync(CancellationToken cancelToken)
         {
             try
             {
-                Trace.TraceInformation($"Start scanning at {location.Name}");
+                await this.nianticClient.ContinuousScanScanAsync(emailAlerter, cancelToken);
+            }
+            catch (Exception e)
+            {
+                Trace.TraceInformation(e.Message + " from " + e.Source);
+                Trace.TraceInformation("Got an exception, restarting...");
+            }
+        }
+
+        public async Task ExecuteScanAsync(CancellationToken cancelToken)
+        {
+            try
+            {
                 await this.nianticClient.ScanAsync(emailAlerter, cancelToken);
             }
             catch (Exception e)
