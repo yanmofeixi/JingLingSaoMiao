@@ -14,6 +14,7 @@
         {
             this._senderAddress = scanner.Email;
             this._password = scanner.Password;
+            _smtpServer.DeliveryMethod = SmtpDeliveryMethod.Network;
             _smtpServer = smtpClient;
             _smtpServer.EnableSsl = true;
             _smtpServer.UseDefaultCredentials = false;
