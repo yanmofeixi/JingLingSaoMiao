@@ -30,6 +30,10 @@ namespace ScannerWorkerRole
                     Thread.Sleep(3600000);
                 };
             }
+            catch(Exception ex)
+            {
+                Trace.TraceError(ex.Message + " from " + ex.Source);
+            }
             finally
             {
                 

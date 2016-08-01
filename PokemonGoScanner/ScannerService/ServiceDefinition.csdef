@@ -4,6 +4,7 @@
     <ConfigurationSettings>
       <Setting name="DefaultConnection" />
       <Setting name="PokemonGoScannerDbEntities" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
     </ConfigurationSettings>
   </WorkerRole>
   <WebRole name="ScannerWebRole" vmsize="Small">
@@ -15,8 +16,8 @@
       </Site>
     </Sites>
     <ConfigurationSettings>
-      <Setting name="DefaultConnection"/>
-      <Setting name="PokemonGoScannerDbEntities"/>
+      <Setting name="DefaultConnection" />
+      <Setting name="PokemonGoScannerDbEntities" />
     </ConfigurationSettings>
     <Endpoints>
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
